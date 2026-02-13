@@ -1,0 +1,89 @@
+﻿package com.kappa.app.economy.data.repository
+
+import com.kappa.app.core.network.ApiService
+import com.kappa.app.core.network.ErrorMapper
+import com.kappa.app.core.network.model.GooglePlayVerifyRequestDto
+import com.kappa.app.core.network.model.toDomain
+import com.kappa.app.domain.economy.CoinBalance
+import com.kappa.app.domain.economy.CoinPackage
+import com.kappa.app.domain.economy.CoinPurchase
+import com.kappa.app.domain.economy.Transaction
+import com.kappa.app.economy.domain.repository.EconomyRepository
+import javax.inject.Inject
+
+class RemoteEconomyRepository @Inject constructor(
+    private val apiService: ApiService,
+    private val errorMapper: ErrorMapper
+) : EconomyRepository {
+    override suspend fun getCoinBalance(userId: String): Result<CoinBalance> {
+        return try {
+            val response = apiService.getCoinBalance()
+            val balance = response.data
+            if (!response.success || balance == null) {
+                Result.failure(Exception(response.error ?: "Failed to load balance"))
+            } else {
+                Result.success(balance.toDomain())
+            }
+        } catch (throwable: Throwable) {
+            val message = errorMapper.mapToUserMessage(errorMapper.mapToNetworkError(throwable))
+            Result.failure(Exception(message))
+        }
+    }
+
+    override suspend fun getTransactions(userId: String): Result<List<Transaction>> {
+        return try {
+            val response = apiService.getCoinTransactions(100)
+            val data = response.data
+            if (!response.success || data == null) {
+                Result.failure(Exception(response.error ?: "Failed to load transactions"))
+            } else {
+                Result.success(data.map { it.toDomain() })
+            }
+        } catch (throwable: Throwable) {
+            val message = errorMapper.mapToUserMessage(errorMapper.mapToNetworkError(throwable))
+            Result.failure(Exception(message))
+        }
+    }
+
+    override suspend fun getCoinPackages(): Result<List<CoinPackage>> {
+        return try {
+            val response = apiService.getCoinPackages()
+            val data = response.data
+            if (!response.success || data == null) {
+                Result.failure(Exception(response.error ?: "Failed to load packages"))
+            } else {
+                Result.success(data.map { it.toDomain() })
+            }
+        } catch (throwable: Throwable) {
+            val message = errorMapper.mapToUserMessage(errorMapper.mapToNetworkError(throwable))
+            Result.failure(Exception(message))
+        }
+    }
+
+    override suspend fun verifyGooglePurchase(
+        packageId: String,
+        productId: String,
+        purchaseToken: String,
+        orderId: String?
+    ): Result<CoinPurchase> {
+        return try {
+            val response = apiService.verifyGooglePlayPurchase(
+                GooglePlayVerifyRequestDto(
+                    packageId = packageId,
+                    productId = productId,
+                    purchaseToken = purchaseToken,
+                    orderId = orderId
+                )
+            )
+            val data = response.data
+            if (!response.success || data == null) {
+                Result.failure(Exception(response.error ?: "Failed to verify purchase"))
+            } else {
+                Result.success(data.toDomain())
+            }
+        } catch (throwable: Throwable) {
+            val message = errorMapper.mapToUserMessage(errorMapper.mapToNetworkError(throwable))
+            Result.failure(Exception(message))
+        }
+    }
+}

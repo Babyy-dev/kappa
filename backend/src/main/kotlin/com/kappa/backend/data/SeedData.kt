@@ -1,0 +1,228 @@
+package com.kappa.backend.data
+
+import com.kappa.backend.models.SeatMode
+import com.kappa.backend.models.SeatStatus
+import com.kappa.backend.models.UserRole
+import com.kappa.backend.data.HomeBanners
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.selectAll
+import org.mindrot.jbcrypt.BCrypt
+import java.util.UUID
+
+object SeedData {
+    private data class Quadruple<A, B, C, D>(val first: A, val second: B, val third: C, val fourth: D)
+
+    fun seedIfEmpty() {
+        if (Users.selectAll().any()) {
+            return
+        }
+
+        val now = System.currentTimeMillis()
+        val agencyId = UUID.randomUUID()
+        val adminId = UUID.randomUUID()
+        val resellerId = UUID.randomUUID()
+        val agencyIdUser = UUID.randomUUID()
+        val hostId = UUID.randomUUID()
+        val teamId = UUID.randomUUID()
+        val userId = UUID.randomUUID()
+        val passwordHash = BCrypt.hashpw("password123", BCrypt.gensalt())
+
+        Agencies.insert {
+            it[id] = agencyId
+            it[name] = "Kappa Agency"
+            it[ownerUserId] = agencyIdUser
+            it[commissionValueUsd] = 2.20.toBigDecimal()
+            it[commissionBlockDiamonds] = 620000
+            it[iconUrl] = "https://api.appkappa.com/uploads/agency_default.png"
+            it[status] = "active"
+            it[createdAt] = now
+        }
+
+        insertUser(adminId, "admin", "admin@kappa.app", UserRole.ADMIN, null, passwordHash, now)
+        insertUser(resellerId, "reseller", "reseller@kappa.app", UserRole.RESELLER, agencyId, passwordHash, now)
+        insertUser(agencyIdUser, "agency", "agency@kappa.app", UserRole.AGENCY, agencyId, passwordHash, now)
+        insertUser(hostId, "host", "host@kappa.app", UserRole.HOST, agencyId, passwordHash, now)
+        insertUser(teamId, "team", "team@kappa.app", UserRole.TEAM, agencyId, passwordHash, now)
+        insertUser(userId, "user", "user@kappa.app", UserRole.USER, agencyId, passwordHash, now)
+
+        insertWallet(adminId, 500000, now)
+        insertWallet(resellerId, 250000, now)
+        insertWallet(agencyIdUser, 100000, now)
+        insertWallet(hostId, 75000, now)
+        insertWallet(teamId, 25000, now)
+        insertWallet(userId, 1250, now)
+
+        insertDiamondWallet(adminId, 0, now)
+        insertDiamondWallet(resellerId, 0, now)
+        insertDiamondWallet(agencyIdUser, 0, now)
+        insertDiamondWallet(hostId, 0, now)
+        insertDiamondWallet(teamId, 0, now)
+        insertDiamondWallet(userId, 0, now)
+
+        seedGifts(now)
+        seedCoinPackages(now)
+        seedHomeBanners(now)
+        seedPosts(now, listOf(userId, hostId, agencyIdUser))
+
+        val loungeRoomId = UUID.randomUUID()
+        Rooms.insert {
+            it[id] = loungeRoomId
+            it[name] = "Kappa Lounge"
+            it[country] = "AE"
+            it[seatMode] = SeatMode.FREE.name
+            it[Rooms.maxSeats] = 28
+            it[Rooms.passwordHash] = null
+            it[status] = "active"
+            it[createdAt] = now
+            it[Rooms.agencyId] = agencyId
+        }
+        seedSeats(loungeRoomId, 28)
+
+        val stageRoomId = UUID.randomUUID()
+        Rooms.insert {
+            it[id] = stageRoomId
+            it[name] = "Agency Stage"
+            it[country] = "BH"
+            it[seatMode] = SeatMode.BLOCKED.name
+            it[Rooms.maxSeats] = 28
+            it[Rooms.passwordHash] = null
+            it[status] = "active"
+            it[createdAt] = now
+            it[Rooms.agencyId] = agencyId
+        }
+        seedSeats(stageRoomId, 28)
+    }
+
+    private fun insertUser(
+        userId: UUID,
+        username: String,
+        email: String,
+        role: UserRole,
+        agencyId: UUID?,
+        passwordHash: String,
+        createdAt: Long
+    ) {
+        Users.insert {
+            it[id] = userId
+            it[Users.username] = username
+            it[Users.email] = email
+            it[Users.passwordHash] = passwordHash
+            it[Users.role] = role.name
+            it[Users.agencyId] = agencyId
+            it[Users.status] = "active"
+            it[Users.createdAt] = createdAt
+        }
+    }
+
+    private fun insertWallet(userId: UUID, balance: Long, now: Long) {
+        CoinWallets.insert {
+            it[CoinWallets.userId] = userId
+            it[CoinWallets.balance] = balance
+            it[CoinWallets.updatedAt] = now
+        }
+    }
+
+    private fun insertDiamondWallet(userId: UUID, balance: Long, now: Long) {
+        DiamondWallets.insert {
+            it[DiamondWallets.userId] = userId
+            it[DiamondWallets.balance] = balance
+            it[DiamondWallets.locked] = 0
+            it[DiamondWallets.updatedAt] = now
+        }
+    }
+
+    private fun seedGifts(now: Long) {
+        val gifts = listOf(
+            Triple("Rose", "INDIVIDUAL", 100L) to 100,
+            Triple("Wave", "GROUP_FIXED", 20L) to 100,
+            Triple("Multiplier", "GROUP_MULTIPLIER", 20L) to 10
+        )
+        gifts.forEach { (gift, percent) ->
+            Gifts.insert {
+                it[id] = UUID.randomUUID()
+                it[name] = gift.first
+                it[giftType] = gift.second
+                it[costCoins] = gift.third
+                it[diamondPercent] = percent
+                it[isActive] = true
+                it[createdAt] = now
+            }
+        }
+    }
+
+    private fun seedCoinPackages(now: Long) {
+        val packages = listOf(
+            Quadruple("Starter Pack", 1000L, 0.99, "kappa_starter"),
+            Quadruple("Value Pack", 5500L, 4.99, "kappa_value"),
+            Quadruple("Mega Pack", 12000L, 9.99, "kappa_mega")
+        )
+        packages.forEach { (name, coins, price, storeId) ->
+            CoinPackages.insert {
+                it[id] = UUID.randomUUID()
+                it[CoinPackages.name] = name
+                it[coinAmount] = coins
+                it[priceUsd] = price.toBigDecimal()
+                it[isActive] = true
+                it[storeProductId] = storeId
+                it[createdAt] = now
+            }
+        }
+    }
+
+    private fun seedSeats(roomId: UUID, maxSeats: Int) {
+        (1..maxSeats).forEach { seatNumber ->
+            RoomSeats.insert {
+                it[RoomSeats.roomId] = roomId
+                it[RoomSeats.seatNumber] = seatNumber
+                it[RoomSeats.userId] = null
+                it[RoomSeats.status] = SeatStatus.FREE.name
+            }
+        }
+    }
+
+    private fun seedHomeBanners(now: Long) {
+        if (HomeBanners.selectAll().any()) {
+            return
+        }
+        val banners = listOf(
+            Triple("More rooms to choose", "Join the most popular lounges", "https://example.com/banner1.png"),
+            Triple("Daily rewards", "Check in to win prizes", "https://example.com/banner2.png"),
+            Triple("Mini game rush", "Play and win coins", "https://example.com/banner3.png")
+        )
+        banners.forEachIndexed { index, banner ->
+            HomeBanners.insert {
+                it[id] = UUID.randomUUID()
+                it[title] = banner.first
+                it[subtitle] = banner.second
+                it[imageUrl] = banner.third
+                it[actionType] = "rooms"
+                it[actionTarget] = "popular"
+                it[sortOrder] = index
+                it[isActive] = true
+                it[createdAt] = now
+                it[updatedAt] = now
+            }
+        }
+    }
+
+    private fun seedPosts(now: Long, userIds: List<UUID>) {
+        if (Posts.selectAll().any()) {
+            return
+        }
+        val contents = listOf(
+            "New live room opened! Join us for music and chat.",
+            "Hosting a desert vibes room tonight. See you there!",
+            "Check out my latest room theme and decorations."
+        )
+        contents.forEachIndexed { index, content ->
+            val userId = userIds.getOrNull(index % userIds.size) ?: userIds.first()
+            Posts.insert {
+                it[id] = UUID.randomUUID()
+                it[Posts.userId] = userId
+                it[Posts.content] = content
+                it[Posts.imageUrl] = null
+                it[Posts.createdAt] = now - (index * 60_000L)
+            }
+        }
+    }
+}
