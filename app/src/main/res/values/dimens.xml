@@ -4,7 +4,7 @@
     <dimen name="kappa_screen_padding_form">24dp</dimen>
     <dimen name="kappa_scroll_padding_horizontal">16dp</dimen>
     <dimen name="kappa_scroll_padding_top">12dp</dimen>
-    <dimen name="kappa_scroll_padding_bottom_nav">140dp</dimen>
+    <dimen name="kappa_scroll_padding_bottom_nav">16dp</dimen>
     <dimen name="kappa_top_header_height">200dp</dimen>
     <dimen name="kappa_top_header_compact_height">92dp</dimen>
     <dimen name="kappa_back_button_size">36dp</dimen>

@@ -24,7 +24,7 @@
         android:paddingStart="@dimen/kappa_scroll_padding_horizontal"
         android:paddingEnd="@dimen/kappa_scroll_padding_horizontal"
         android:paddingTop="@dimen/kappa_scroll_padding_top"
-        android:paddingBottom="@dimen/kappa_scroll_padding_bottom_nav"
+        android:paddingBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
