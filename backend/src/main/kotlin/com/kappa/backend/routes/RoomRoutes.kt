@@ -104,7 +104,8 @@ fun Route.roomRoutes(
         )
         val left = roomService.leaveRoom(UUID.fromString(roomId), UUID.fromString(userId))
         if (!left) {
-            call.respond(HttpStatusCode.BadRequest, ApiResponse<Unit>(success = false, error = "Not in room"))
+            // Treat leave as idempotent so clients can safely call it on reconnect/cleanup.
+            call.respond(ApiResponse(success = true, data = Unit, message = "Already left room"))
             return@post
         }
         call.respond(ApiResponse(success = true, data = Unit, message = "Left room"))

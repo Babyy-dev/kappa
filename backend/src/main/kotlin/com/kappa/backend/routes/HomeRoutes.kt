@@ -49,25 +49,27 @@ fun Route.homeRoutes() {
     }
 
     get("home/posts") {
-        val posts = transaction {
-            (Posts innerJoin Users)
-                .selectAll()
-                .orderBy(Posts.createdAt to SortOrder.DESC)
-                .limit(50)
-                .map { row ->
-                    val nickname = row[Users.nickname]
-                    val username = row[Users.username]
-                    HomePost(
-                        id = row[Posts.id].toString(),
-                        userId = row[Posts.userId].toString(),
-                        userName = nickname ?: username,
-                        content = row[Posts.content],
-                        imageUrl = row[Posts.imageUrl],
-                        avatarUrl = row[Users.avatarUrl],
-                        createdAt = row[Posts.createdAt]
-                    )
-                }
-        }
+        val posts = runCatching {
+            transaction {
+                (Posts innerJoin Users)
+                    .selectAll()
+                    .orderBy(Posts.createdAt to SortOrder.DESC)
+                    .limit(50)
+                    .map { row ->
+                        val nickname = row[Users.nickname]
+                        val username = row[Users.username]
+                        HomePost(
+                            id = row[Posts.id].toString(),
+                            userId = row[Posts.userId].toString(),
+                            userName = nickname ?: username,
+                            content = row[Posts.content],
+                            imageUrl = row[Posts.imageUrl],
+                            avatarUrl = row[Users.avatarUrl],
+                            createdAt = row[Posts.createdAt]
+                        )
+                    }
+            }
+        }.getOrElse { emptyList() }
         call.respond(ApiResponse(success = true, data = posts))
     }
 }
