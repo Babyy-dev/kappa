@@ -57,20 +57,24 @@
 
                 <ImageButton
                     android:id="@+id/button_room_favorite"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="@dimen/kappa_top_action_button_size"
+                    android:layout_height="@dimen/kappa_top_action_button_size"
                     android:background="@drawable/bg_pill_teal"
                     android:contentDescription="@null"
+                    android:padding="8dp"
+                    android:scaleType="centerInside"
                     android:src="@drawable/ic_star"
                     android:tint="@color/kappa_gold_300" />
 
                 <ImageButton
                     android:id="@+id/button_room_minimize"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="@dimen/kappa_top_action_button_size"
+                    android:layout_height="@dimen/kappa_top_action_button_size"
                     android:layout_marginStart="6dp"
                     android:background="@drawable/bg_pill_teal"
                     android:contentDescription="@null"
+                    android:padding="8dp"
+                    android:scaleType="centerInside"
                     android:src="@drawable/ic_room_tools"
                     android:tint="@color/kappa_cream" />
             </LinearLayout>
@@ -519,6 +523,8 @@
             android:layout_marginEnd="10dp"
             android:background="@drawable/bg_room_menu_button"
             android:contentDescription="@null"
+            android:padding="10dp"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_room_seats"
             android:tint="@color/kappa_cream" />
 
@@ -529,6 +535,8 @@
             android:layout_marginEnd="10dp"
             android:background="@drawable/bg_room_menu_button"
             android:contentDescription="@null"
+            android:padding="10dp"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_room_chat"
             android:tint="@color/kappa_cream" />
 
@@ -539,6 +547,8 @@
             android:layout_marginEnd="10dp"
             android:background="@drawable/bg_room_menu_button"
             android:contentDescription="@null"
+            android:padding="10dp"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_room_gifts"
             android:tint="@color/kappa_cream" />
 
@@ -548,6 +558,8 @@
             android:layout_height="48dp"
             android:background="@drawable/bg_room_menu_button"
             android:contentDescription="@null"
+            android:padding="10dp"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_room_tools"
             android:tint="@color/kappa_cream" />
     </LinearLayout>

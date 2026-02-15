@@ -36,6 +36,11 @@ class AgencyService(
     fun applyForAgency(userId: UUID, agencyName: String): AgencyApplicationResponse {
         require(agencyName.isNotBlank()) { "Agency name is required" }
         return transaction {
+            val user = Users.select { Users.id eq userId }.singleOrNull()
+                ?: throw IllegalArgumentException("User not found")
+            if (user[Users.role] == UserRole.AGENCY.name || user[Users.agencyId] != null) {
+                throw IllegalArgumentException("User is already linked to an agency")
+            }
             val existing = AgencyApplications.select {
                 (AgencyApplications.userId eq userId) and (AgencyApplications.status eq "PENDING")
             }.singleOrNull()
@@ -72,6 +77,11 @@ class AgencyService(
 
     fun applyForReseller(userId: UUID): ResellerApplicationResponse {
         return transaction {
+            val user = Users.select { Users.id eq userId }.singleOrNull()
+                ?: throw IllegalArgumentException("User not found")
+            if (user[Users.role] == UserRole.RESELLER.name) {
+                throw IllegalArgumentException("User is already a reseller")
+            }
             val existing = ResellerApplications.select {
                 (ResellerApplications.userId eq userId) and (ResellerApplications.status eq "PENDING")
             }.singleOrNull()
@@ -267,6 +277,9 @@ class AgencyService(
             val now = System.currentTimeMillis()
             val user = Users.select { Users.id eq userId }.singleOrNull()
                 ?: throw IllegalArgumentException("User not found")
+            if (user[Users.role] != UserRole.AGENCY.name && user[Users.role] != UserRole.ADMIN.name) {
+                throw IllegalArgumentException("Only agency/admin users can create teams")
+            }
             val teamId = UUID.randomUUID()
             TeamGroups.insert {
                 it[id] = teamId
@@ -293,9 +306,16 @@ class AgencyService(
 
     fun joinTeam(userId: UUID, teamId: UUID): Boolean {
         return transaction {
-            val exists = TeamGroups.select { TeamGroups.id eq teamId }.any()
-            if (!exists) {
+            val teamRow = TeamGroups.select { TeamGroups.id eq teamId }.singleOrNull()
+            if (teamRow == null) {
                 return@transaction false
+            }
+            val user = Users.select { Users.id eq userId }.singleOrNull()
+                ?: return@transaction false
+            val teamAgencyId = teamRow[TeamGroups.agencyId]
+            val userAgencyId = user[Users.agencyId]
+            if (teamAgencyId != null && userAgencyId != null && teamAgencyId != userAgencyId) {
+                throw IllegalArgumentException("Cannot join team outside your agency")
             }
             val already = TeamMembers.select {
                 (TeamMembers.teamId eq teamId) and (TeamMembers.userId eq userId)
@@ -319,11 +339,14 @@ class AgencyService(
 
     fun leaveTeam(userId: UUID, teamId: UUID): Boolean {
         return transaction {
+            val teamRow = TeamGroups.select { TeamGroups.id eq teamId }.singleOrNull()
+                ?: return@transaction false
+            if (teamRow[TeamGroups.ownerUserId] == userId) {
+                throw IllegalArgumentException("Team owner cannot leave team")
+            }
             val deleted = TeamMembers.deleteWhere { (TeamMembers.teamId eq teamId) and (TeamMembers.userId eq userId) } > 0
             if (deleted) {
-                val agencyId = TeamGroups.select { TeamGroups.id eq teamId }
-                    .singleOrNull()
-                    ?.get(TeamGroups.agencyId)
+                val agencyId = teamRow[TeamGroups.agencyId]
                 logAction(agencyId, userId, "TEAM_LEAVE", "Team ${teamId}")
             }
             deleted

@@ -41,6 +41,11 @@ class EconomyService(
     private val googlePlayBillingService: GooglePlayBillingService,
     private val systemMessageService: SystemMessageService
 ) {
+    data class CoinTransferResult(
+        val fromBalance: CoinBalanceResponse,
+        val toBalance: CoinBalanceResponse
+    )
+
     fun getCoinBalance(userId: UUID): CoinBalanceResponse {
         return transaction {
             val row = CoinWallets.select { CoinWallets.userId eq userId }.singleOrNull()
@@ -74,6 +79,86 @@ class EconomyService(
     fun debitCoins(userId: UUID, amount: Long): CoinBalanceResponse {
         require(amount > 0) { "Debit amount must be greater than 0" }
         return adjustBalance(userId, -amount)
+    }
+
+    fun transferCoins(
+        fromUserId: UUID,
+        toUserId: UUID,
+        amount: Long,
+        debitType: String = "TRANSFER_OUT",
+        creditType: String = "TRANSFER_IN"
+    ): CoinTransferResult {
+        require(amount > 0) { "Transfer amount must be greater than 0" }
+        require(fromUserId != toUserId) { "Sender and recipient must be different" }
+        return transaction {
+            val now = System.currentTimeMillis()
+
+            val fromRow = CoinWallets.select { CoinWallets.userId eq fromUserId }.singleOrNull()
+            val fromCurrent = fromRow?.get(CoinWallets.balance) ?: 0L
+            val fromNew = fromCurrent - amount
+            require(fromNew >= 0) { "Insufficient balance" }
+
+            if (fromRow == null) {
+                CoinWallets.insert {
+                    it[CoinWallets.userId] = fromUserId
+                    it[CoinWallets.balance] = fromNew
+                    it[CoinWallets.updatedAt] = now
+                }
+            } else {
+                CoinWallets.update({ CoinWallets.userId eq fromUserId }) {
+                    it[balance] = fromNew
+                    it[updatedAt] = now
+                }
+            }
+
+            val toRow = CoinWallets.select { CoinWallets.userId eq toUserId }.singleOrNull()
+            val toCurrent = toRow?.get(CoinWallets.balance) ?: 0L
+            val toNew = toCurrent + amount
+
+            if (toRow == null) {
+                CoinWallets.insert {
+                    it[CoinWallets.userId] = toUserId
+                    it[CoinWallets.balance] = toNew
+                    it[CoinWallets.updatedAt] = now
+                }
+            } else {
+                CoinWallets.update({ CoinWallets.userId eq toUserId }) {
+                    it[balance] = toNew
+                    it[updatedAt] = now
+                }
+            }
+
+            CoinTransactions.insert {
+                it[id] = UUID.randomUUID()
+                it[CoinTransactions.userId] = fromUserId
+                it[CoinTransactions.type] = debitType
+                it[CoinTransactions.amount] = amount
+                it[balanceAfter] = fromNew
+                it[createdAt] = now
+            }
+
+            CoinTransactions.insert {
+                it[id] = UUID.randomUUID()
+                it[CoinTransactions.userId] = toUserId
+                it[CoinTransactions.type] = creditType
+                it[CoinTransactions.amount] = amount
+                it[balanceAfter] = toNew
+                it[createdAt] = now
+            }
+
+            CoinTransferResult(
+                fromBalance = CoinBalanceResponse(
+                    userId = fromUserId.toString(),
+                    balance = fromNew,
+                    currency = "coins"
+                ),
+                toBalance = CoinBalanceResponse(
+                    userId = toUserId.toString(),
+                    balance = toNew,
+                    currency = "coins"
+                )
+            )
+        }
     }
 
     fun listTransactions(userId: UUID, limit: Int = 50): List<CoinTransactionResponse> {
@@ -363,19 +448,28 @@ class EconomyService(
     }
 
     fun purchaseCoins(userId: UUID, packageId: UUID, provider: String, providerTxId: String): CoinPurchaseResponse {
+        val normalizedProvider = provider.trim().uppercase()
+        val normalizedProviderTxId = providerTxId.trim()
+        require(normalizedProvider.isNotBlank()) { "Provider is required" }
+        require(normalizedProviderTxId.isNotBlank()) { "Provider transaction id is required" }
         val response = transaction {
             val packageRow = CoinPackages.select { CoinPackages.id eq packageId }.singleOrNull()
                 ?: throw IllegalArgumentException("Package not found")
             val now = System.currentTimeMillis()
-            val normalizedProvider = provider.trim().uppercase()
             val existing = CoinPurchases.select {
-                (CoinPurchases.provider eq normalizedProvider) and (CoinPurchases.providerTxId eq providerTxId)
+                (CoinPurchases.provider eq normalizedProvider) and (CoinPurchases.providerTxId eq normalizedProviderTxId)
             }.singleOrNull()
             val currentBalance = CoinWallets.select { CoinWallets.userId eq userId }
                 .singleOrNull()
                 ?.get(CoinWallets.balance)
                 ?: 0L
             if (existing != null) {
+                if (existing[CoinPurchases.userId] != userId) {
+                    throw IllegalArgumentException("Transaction id already used by another user")
+                }
+                if (existing[CoinPurchases.packageId] != packageId) {
+                    throw IllegalArgumentException("Transaction id does not match package")
+                }
                 return@transaction CoinPurchaseResponse(
                     id = existing[CoinPurchases.id].toString(),
                     status = existing[CoinPurchases.status],
@@ -389,7 +483,7 @@ class EconomyService(
                     it[CoinPurchases.userId] = userId
                     it[CoinPurchases.packageId] = packageId
                     it[CoinPurchases.provider] = normalizedProvider
-                    it[CoinPurchases.providerTxId] = providerTxId
+                    it[CoinPurchases.providerTxId] = normalizedProviderTxId
                     it[CoinPurchases.status] = "PENDING"
                     it[createdAt] = now
                 }
@@ -405,7 +499,7 @@ class EconomyService(
                 it[CoinPurchases.userId] = userId
                 it[CoinPurchases.packageId] = packageId
                 it[CoinPurchases.provider] = normalizedProvider
-                it[CoinPurchases.providerTxId] = providerTxId
+                it[CoinPurchases.providerTxId] = normalizedProviderTxId
                 it[CoinPurchases.status] = "COMPLETED"
                 it[createdAt] = now
             }
@@ -435,19 +529,31 @@ class EconomyService(
         purchaseToken: String,
         orderId: String?
     ): CoinPurchaseResponse {
-        require(productId.isNotBlank()) { "Product id is required" }
-        require(purchaseToken.isNotBlank()) { "Purchase token is required" }
+        val normalizedProductId = productId.trim()
+        val normalizedPurchaseToken = purchaseToken.trim()
+        val normalizedOrderId = orderId?.trim()?.ifBlank { null }
+        require(normalizedProductId.isNotBlank()) { "Product id is required" }
+        require(normalizedPurchaseToken.isNotBlank()) { "Purchase token is required" }
         val response = transaction {
             val packageRow = CoinPackages.select { CoinPackages.id eq packageId }.singleOrNull()
                 ?: throw IllegalArgumentException("Package not found")
+            if (!packageRow[CoinPackages.isActive]) {
+                throw IllegalArgumentException("Package is not active")
+            }
             val packageCoins = packageRow[CoinPackages.coinAmount]
 
             val existing = CoinPurchases.select {
                 (CoinPurchases.provider eq "GOOGLE_PLAY") and
-                    (CoinPurchases.providerTxId eq purchaseToken)
+                    (CoinPurchases.providerTxId eq normalizedPurchaseToken)
             }.singleOrNull()
 
             if (existing != null) {
+                if (existing[CoinPurchases.userId] != userId) {
+                    throw IllegalArgumentException("Purchase token already used by another user")
+                }
+                if (existing[CoinPurchases.packageId] != packageId) {
+                    throw IllegalArgumentException("Purchase token does not match package")
+                }
                 if (existing[CoinPurchases.status] == "VERIFIED") {
                     val balance = getCoinBalance(userId)
                     return@transaction CoinPurchaseResponse(
@@ -459,13 +565,17 @@ class EconomyService(
             }
 
             val storeProductId = packageRow[CoinPackages.storeProductId]
-            if (!storeProductId.isNullOrBlank() && storeProductId != productId) {
+            if (!storeProductId.isNullOrBlank() && storeProductId != normalizedProductId) {
                 throw IllegalArgumentException("Product id mismatch")
             }
 
-            val purchase = googlePlayBillingService.verifyProductPurchase(productId, purchaseToken)
+            val purchase = googlePlayBillingService.verifyProductPurchase(normalizedProductId, normalizedPurchaseToken)
             if (purchase.purchaseState != 0) {
                 throw IllegalArgumentException("Purchase not completed")
+            }
+            val purchaseOrderId = purchase.orderId?.trim()?.ifBlank { null }
+            if (normalizedOrderId != null && purchaseOrderId != normalizedOrderId) {
+                throw IllegalArgumentException("Order id mismatch")
             }
 
             val now = System.currentTimeMillis()
@@ -476,7 +586,7 @@ class EconomyService(
                     it[CoinPurchases.userId] = userId
                     it[CoinPurchases.packageId] = packageId
                     it[CoinPurchases.provider] = "GOOGLE_PLAY"
-                    it[CoinPurchases.providerTxId] = purchaseToken
+                    it[CoinPurchases.providerTxId] = normalizedPurchaseToken
                     it[CoinPurchases.status] = "VERIFIED"
                     it[createdAt] = now
                 }

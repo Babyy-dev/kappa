@@ -10,20 +10,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="@dimen/kappa_screen_padding">
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="92dp"
+            android:layout_height="@dimen/kappa_top_header_compact_height"
             android:background="@drawable/bg_top_header">
 
             <ImageButton
                 android:id="@+id/button_game_detail_back"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                style="@style/Widget.Kappa.IconButton.Pill"
                 android:layout_gravity="center_vertical|start"
-                android:layout_marginStart="12dp"
-                android:background="@drawable/bg_pill_teal"
+                android:layout_marginStart="@dimen/kappa_back_button_margin_start"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_back"
                 android:tint="@color/kappa_cream" />

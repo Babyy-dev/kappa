@@ -2,15 +2,28 @@ package com.kappa.app.main
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.navOptions
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.kappa.app.R
+import com.kappa.app.core.storage.PreferencesManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var preferencesManager: PreferencesManager
+
+    private var sessionObserverJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,12 +101,45 @@ class MainActivity : AppCompatActivity() {
                 // Reselecting the same tab pops to its root destination.
                 navController.popBackStack(item.itemId, false)
             }
+            observeSessionState(navController)
 
             Timber.d("Navigation setup complete!")
             Timber.d("Using NavigationUI.setupWithNavController() - this handles all navigation automatically")
         } catch (e: Exception) {
             Timber.e(e, "Error setting up navigation: ${e.message}")
             e.printStackTrace()
+        }
+    }
+
+    private fun observeSessionState(navController: androidx.navigation.NavController) {
+        if (sessionObserverJob != null) {
+            return
+        }
+        sessionObserverJob = lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                preferencesManager.getAccessToken().collect { token ->
+                    if (!token.isNullOrBlank()) {
+                        return@collect
+                    }
+                    val currentDestinationId = navController.currentDestination?.id ?: return@collect
+                    val publicDestinations = setOf(
+                        R.id.navigation_splash,
+                        R.id.navigation_login,
+                        R.id.navigation_signup
+                    )
+                    if (currentDestinationId in publicDestinations) {
+                        return@collect
+                    }
+                    navController.navigate(
+                        R.id.navigation_login,
+                        null,
+                        navOptions {
+                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    )
+                }
+            }
         }
     }
 }

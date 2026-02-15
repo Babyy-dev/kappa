@@ -8,7 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.kappa.app.R
 
 sealed class SearchResultItem {
-    data class Room(val id: String, val title: String) : SearchResultItem()
+    data class Room(
+        val id: String,
+        val title: String,
+        val requiresPassword: Boolean
+    ) : SearchResultItem()
     data class User(val id: String, val title: String) : SearchResultItem()
     data class Agency(val id: String, val title: String) : SearchResultItem()
 }

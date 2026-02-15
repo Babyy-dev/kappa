@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="@dimen/kappa_screen_padding">
 
     <TextView
         android:id="@+id/text_audio_info"
@@ -20,7 +20,7 @@
         android:id="@+id/text_audio_hint"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/kappa_section_spacing_small"
         android:text="Microphone and effects will show here."
         android:textAppearance="@style/TextAppearance.Kappa.Body"
         android:textColor="@color/kappa_mint_100"

@@ -139,7 +139,10 @@ fun GiftSendDto.toDomain(): GiftLog {
         recipientId = recipientId,
         amount = amount,
         senderBalance = senderBalance,
-        createdAt = createdAt
+        createdAt = createdAt,
+        giftType = giftType,
+        diamondsTotal = diamondsTotal,
+        recipientCount = recipientCount
     )
 }
 
@@ -156,6 +159,7 @@ fun AgencyApplicationDto.toDomain(): com.kappa.app.agency.domain.model.AgencyApp
 fun ResellerApplicationDto.toDomain(): com.kappa.app.agency.domain.model.ResellerApplication {
     return com.kappa.app.agency.domain.model.ResellerApplication(
         id = id,
+        userId = userId,
         status = status,
         createdAt = createdAt,
         reviewedAt = reviewedAt

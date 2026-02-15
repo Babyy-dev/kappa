@@ -2,28 +2,65 @@
 <resources>
     <style name="TextAppearance.Kappa.Headline" parent="TextAppearance.MaterialComponents.Headline5">
         <item name="android:fontFamily">@font/cinzel</item>
+        <item name="android:textSize">@dimen/text_size_headline_small</item>
         <item name="android:textColor">@color/kappa_cream</item>
     </style>
 
     <style name="TextAppearance.Kappa.Section" parent="TextAppearance.MaterialComponents.Subtitle1">
         <item name="android:fontFamily">@font/cinzel</item>
+        <item name="android:textSize">@dimen/text_size_title_medium</item>
         <item name="android:textColor">@color/kappa_cream</item>
     </style>
 
     <style name="TextAppearance.Kappa.Body" parent="TextAppearance.MaterialComponents.Body2">
         <item name="android:fontFamily">@font/manrope</item>
+        <item name="android:textSize">@dimen/text_size_body_medium</item>
         <item name="android:textColor">@color/kappa_mint_100</item>
     </style>
 
     <style name="TextAppearance.Kappa.Muted" parent="TextAppearance.MaterialComponents.Body2">
         <item name="android:fontFamily">@font/manrope</item>
+        <item name="android:textSize">@dimen/text_size_body_small</item>
         <item name="android:textColor">@color/kappa_mint_50</item>
+    </style>
+
+    <style name="TextAppearance.Kappa.ListTitle" parent="TextAppearance.MaterialComponents.Subtitle2">
+        <item name="android:fontFamily">@font/manrope</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/text_size_title_small</item>
+        <item name="android:textColor">@color/kappa_gold_300</item>
+    </style>
+
+    <style name="TextAppearance.Kappa.ListBody" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="android:fontFamily">@font/manrope</item>
+        <item name="android:textSize">@dimen/text_size_body_small</item>
+        <item name="android:textColor">@color/kappa_mint_100</item>
+    </style>
+
+    <style name="TextAppearance.Kappa.ListMeta" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:fontFamily">@font/manrope</item>
+        <item name="android:textSize">@dimen/text_size_label_small</item>
+        <item name="android:textColor">@color/kappa_text_muted</item>
+    </style>
+
+    <style name="TextAppearance.Kappa.ListBadge" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:fontFamily">@font/manrope</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/text_size_label_small</item>
+        <item name="android:textColor">@color/kappa_mint_100</item>
     </style>
 
     <style name="TextAppearance.Kappa.Nav" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:fontFamily">@font/manrope</item>
         <item name="android:textColor">@color/kappa_mint_100</item>
-        <item name="android:textSize">11sp</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="TextAppearance.Kappa.HeaderTab" parent="TextAppearance.MaterialComponents.Subtitle2">
+        <item name="android:fontFamily">@font/manrope</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/kappa_header_tab_text_size</item>
+        <item name="android:letterSpacing">0.01</item>
     </style>
 
     <style name="TextAppearance.Kappa.Section.Dark" parent="TextAppearance.MaterialComponents.Subtitle1">
@@ -62,6 +99,19 @@
         <item name="strokeColor">@color/kappa_teal_700</item>
         <item name="strokeWidth">1dp</item>
         <item name="cornerRadius">22dp</item>
+    </style>
+
+    <style name="Widget.Kappa.Button.Tab" parent="Widget.Kappa.Button.Secondary">
+        <item name="android:minHeight">42dp</item>
+        <item name="cornerRadius">16dp</item>
+    </style>
+
+    <style name="Widget.Kappa.IconButton.Pill" parent="Widget.AppCompat.ImageButton">
+        <item name="android:layout_width">@dimen/kappa_back_button_size</item>
+        <item name="android:layout_height">@dimen/kappa_back_button_size</item>
+        <item name="android:background">@drawable/bg_pill_teal</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:scaleType">centerInside</item>
     </style>
 
     <style name="Widget.Kappa.Button.Text" parent="Widget.MaterialComponents.Button.TextButton">

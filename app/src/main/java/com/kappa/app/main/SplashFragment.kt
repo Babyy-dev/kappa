@@ -10,6 +10,8 @@ import androidx.navigation.fragment.findNavController
 import com.kappa.app.R
 import com.kappa.app.auth.domain.repository.AuthRepository
 import com.kappa.app.core.storage.PreferencesManager
+import com.kappa.app.domain.user.Role
+import com.kappa.app.domain.user.User
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -46,15 +48,26 @@ class SplashFragment : Fragment() {
                 if (currentUser == null) {
                     R.id.navigation_login
                 } else {
-                    val userId = preferencesManager.getUserIdOnce()
-                    if (!userId.isNullOrBlank() && preferencesManager.isOnboardingComplete(userId)) {
-                        R.id.navigation_inbox
-                    } else {
-                        R.id.navigation_onboarding_country
-                    }
+                    resolveLoggedInDestination(currentUser)
                 }
             }
             findNavController().navigate(destination)
+        }
+    }
+
+    private suspend fun resolveLoggedInDestination(currentUser: User): Int {
+        return when (currentUser.role) {
+            Role.ADMIN -> R.id.navigation_admin_dashboard
+            Role.AGENCY -> R.id.navigation_agency_tools
+            Role.RESELLER -> R.id.navigation_reseller_tools
+            else -> {
+                val userId = preferencesManager.getUserIdOnce()
+                if (!userId.isNullOrBlank() && preferencesManager.isOnboardingComplete(userId)) {
+                    R.id.navigation_inbox
+                } else {
+                    R.id.navigation_onboarding_country
+                }
+            }
         }
     }
 }

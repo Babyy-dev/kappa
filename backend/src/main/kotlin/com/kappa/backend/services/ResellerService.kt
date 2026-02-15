@@ -77,6 +77,7 @@ class ResellerService(
     }
 
     fun getLimits(resellerId: UUID, sellerId: UUID): ResellerSellerLimitResponse? {
+        require(isManagedSeller(resellerId, sellerId)) { "Seller is not managed by reseller" }
         return transaction {
             ResellerSellerLimits.select {
                 (ResellerSellerLimits.resellerId eq resellerId) and (ResellerSellerLimits.sellerId eq sellerId)
@@ -93,6 +94,7 @@ class ResellerService(
 
     fun setLimits(resellerId: UUID, sellerId: UUID, request: ResellerSellerLimitRequest): ResellerSellerLimitResponse {
         require(request.totalLimit >= 0 && request.dailyLimit >= 0) { "Invalid limits" }
+        require(isManagedSeller(resellerId, sellerId)) { "Seller is not managed by reseller" }
         return transaction {
             val now = System.currentTimeMillis()
             val exists = ResellerSellerLimits.select {
@@ -145,8 +147,11 @@ class ResellerService(
 
     fun createSale(resellerId: UUID, request: ResellerSaleRequest): ResellerSaleResponse {
         require(request.amount > 0) { "Amount must be greater than 0" }
+        require(request.currency.trim().isNotBlank()) { "Currency is required" }
+        require(request.destinationAccount.trim().isNotBlank()) { "Destination account is required" }
         val sellerResolved = resolveUserId(request.sellerId)
             ?: throw IllegalArgumentException("Seller not found")
+        require(isManagedSeller(resellerId, sellerResolved)) { "Seller is not managed by reseller" }
         val buyerResolved = resolveUserId(request.buyerId)
             ?: throw IllegalArgumentException("Buyer not found")
         return transaction {
@@ -224,10 +229,29 @@ class ResellerService(
 
     fun sendCoins(resellerId: UUID, recipientId: UUID, request: ResellerSendCoinsRequest): ResellerSendCoinsResponse {
         require(request.amount > 0) { "Amount must be greater than 0" }
+        require(isManagedSeller(resellerId, recipientId)) { "Recipient is not a managed seller" }
         validateLimits(resellerId, recipientId, request.amount)
-        val balance = economyService.debitCoins(resellerId, request.amount)
-        economyService.creditCoins(recipientId, request.amount)
-        return ResellerSendCoinsResponse(balance = balance.balance)
+        val transfer = economyService.transferCoins(
+            fromUserId = resellerId,
+            toUserId = recipientId,
+            amount = request.amount,
+            debitType = "RESELLER_SEND",
+            creditType = "RESELLER_RECEIVE"
+        )
+        transaction {
+            ResellerSales.insert {
+                it[id] = UUID.randomUUID()
+                it[ResellerSales.resellerId] = resellerId
+                it[ResellerSales.sellerId] = recipientId
+                it[ResellerSales.buyerId] = recipientId
+                it[ResellerSales.externalSaleId] = null
+                it[ResellerSales.amount] = request.amount
+                it[ResellerSales.currency] = "COINS"
+                it[ResellerSales.destinationAccount] = request.recipientId.trim()
+                it[ResellerSales.createdAt] = System.currentTimeMillis()
+            }
+        }
+        return ResellerSendCoinsResponse(balance = transfer.fromBalance.balance)
     }
 
     fun listLogs(resellerId: UUID, limit: Int): List<ResellerLogResponse> {
@@ -301,6 +325,14 @@ class ResellerService(
             if (sum + amount > dailyLimit) {
                 throw IllegalArgumentException("Amount exceeds seller daily limit")
             }
+        }
+    }
+
+    private fun isManagedSeller(resellerId: UUID, sellerId: UUID): Boolean {
+        return transaction {
+            ResellerSellers.select {
+                (ResellerSellers.resellerId eq resellerId) and (ResellerSellers.sellerId eq sellerId)
+            }.any()
         }
     }
 

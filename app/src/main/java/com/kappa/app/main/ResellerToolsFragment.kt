@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.net.Uri
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -162,7 +161,7 @@ class ResellerToolsFragment : Fragment() {
         }
 
         historyButton.setOnClickListener {
-            Toast.makeText(requireContext(), "History not available yet", Toast.LENGTH_SHORT).show()
+            viewModel.refreshAll()
         }
 
         viewLifecycleOwner.lifecycleScope.launch {

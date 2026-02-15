@@ -30,6 +30,7 @@ fun Route.authRoutes(authService: AuthService) {
                 AuthService.SignupFailureReason.AGENCY_NOT_FOUND -> HttpStatusCode.BadRequest to "Agency not found"
                 AuthService.SignupFailureReason.WEAK_PASSWORD -> HttpStatusCode.BadRequest to "Password must be at least 6 characters"
                 AuthService.SignupFailureReason.INVALID_INPUT -> HttpStatusCode.BadRequest to "Username, email, and password are required"
+                AuthService.SignupFailureReason.INVALID_PHONE -> HttpStatusCode.BadRequest to "Invalid phone number format"
                 AuthService.SignupFailureReason.OTP_FAILED -> HttpStatusCode.BadGateway to "OTP delivery failed"
                 null -> HttpStatusCode.BadRequest to "Signup failed"
             }

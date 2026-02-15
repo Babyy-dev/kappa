@@ -2,8 +2,9 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="160dp"
-    android:layout_height="100dp"
-    android:layout_marginEnd="10dp"
+    android:layout_height="wrap_content"
+    android:minHeight="100dp"
+    android:layout_marginEnd="@dimen/kappa_section_spacing_small"
     app:cardCornerRadius="18dp"
     app:cardElevation="3dp"
     app:cardBackgroundColor="@color/kappa_surface"
@@ -21,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Game"
-            android:textAppearance="@style/TextAppearance.Kappa.Section"
+            android:textAppearance="@style/TextAppearance.Kappa.ListTitle"
             android:textColor="@color/kappa_gold_300" />
 
         <TextView
@@ -30,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Description"
-            android:textAppearance="@style/TextAppearance.Kappa.Muted" />
+            android:textAppearance="@style/TextAppearance.Kappa.ListMeta" />
 
         <TextView
             android:id="@+id/text_mini_game_fee"
@@ -38,7 +39,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:text="200 coins"
-            android:textAppearance="@style/TextAppearance.Kappa.Body"
-            android:textColor="@color/kappa_mint_100" />
+            android:textAppearance="@style/TextAppearance.Kappa.ListBody" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -16,9 +16,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class AgencyViewState(
+    val currentRole: String = "",
+    val canReviewApplications: Boolean = false,
     val agencyApplication: AgencyApplication? = null,
     val resellerApplication: ResellerApplication? = null,
     val agencyApplications: List<AgencyApplication> = emptyList(),
+    val resellerApplications: List<ResellerApplication> = emptyList(),
     val teams: List<Team> = emptyList(),
     val commissions: List<AgencyCommission> = emptyList(),
     val rooms: List<Pair<String, String>> = emptyList(),
@@ -44,12 +47,26 @@ class AgencyViewModel @Inject constructor(
         viewModelScope.launch {
             _viewState.update { it.copy(isRefreshing = true, error = null, actionMessage = null) }
 
+            val role = repository.getCurrentRole().getOrElse {
+                emitError(it.message)
+                ""
+            }.uppercase()
+            val canReview = role == "ADMIN"
+
             val agencyApps = repository.getAgencyApplications().getOrElse {
                 emitError(it.message)
                 emptyList()
             }
             val resellerApps = repository.getResellerApplications().getOrElse {
                 emitError(it.message)
+                emptyList()
+            }
+            val adminResellerApps = if (canReview) {
+                repository.getAdminResellerApplications().getOrElse {
+                    emitError(it.message)
+                    emptyList()
+                }
+            } else {
                 emptyList()
             }
             val teams = repository.listTeams().getOrElse {
@@ -73,7 +90,10 @@ class AgencyViewModel @Inject constructor(
                 it.copy(
                     agencyApplication = agencyApps.firstOrNull(),
                     resellerApplication = resellerApps.firstOrNull(),
+                    currentRole = role,
+                    canReviewApplications = canReview,
                     agencyApplications = agencyApps,
+                    resellerApplications = if (canReview) adminResellerApps else resellerApps,
                     teams = teams,
                     commissions = commissions,
                     rooms = rooms,
@@ -181,6 +201,30 @@ class AgencyViewModel @Inject constructor(
             repository.rejectAgencyApplication(id)
                 .onSuccess {
                     _viewState.update { it.copy(actionMessage = "Application rejected") }
+                }
+                .onFailure { emitError(it.message) }
+            refreshAll()
+        }
+    }
+
+    fun approveResellerApplication(id: String) {
+        viewModelScope.launch {
+            _viewState.update { it.copy(isRefreshing = true, actionMessage = null, error = null) }
+            repository.approveResellerApplication(id)
+                .onSuccess {
+                    _viewState.update { it.copy(actionMessage = "Reseller application approved") }
+                }
+                .onFailure { emitError(it.message) }
+            refreshAll()
+        }
+    }
+
+    fun rejectResellerApplication(id: String) {
+        viewModelScope.launch {
+            _viewState.update { it.copy(isRefreshing = true, actionMessage = null, error = null) }
+            repository.rejectResellerApplication(id)
+                .onSuccess {
+                    _viewState.update { it.copy(actionMessage = "Reseller application rejected") }
                 }
                 .onFailure { emitError(it.message) }
             refreshAll()

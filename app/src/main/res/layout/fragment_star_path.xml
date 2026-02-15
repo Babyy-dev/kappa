@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_screen_emerald"
-    android:padding="16dp">
+    android:padding="@dimen/kappa_screen_padding">
 
     <TextView
         android:id="@+id/text_star_path_title"
@@ -18,12 +18,64 @@
 
     <TextView
         android:id="@+id/text_star_path_status"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="@dimen/kappa_section_spacing"
         android:text="Progress: -"
         android:textAppearance="@style/TextAppearance.Kappa.Body"
         android:textColor="@color/kappa_mint_100"
         app:layout_constraintTop_toBottomOf="@id/text_star_path_title"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/input_layout_star_path_diamonds"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/kappa_section_spacing"
+        android:hint="Diamonds to request"
+        app:layout_constraintTop_toBottomOf="@id/text_star_path_status"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button_star_path_request">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input_star_path_diamonds"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_star_path_request"
+        style="@style/Widget.Kappa.Button.Secondary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/kappa_section_spacing_small"
+        android:text="Request"
+        app:layout_constraintTop_toTopOf="@id/input_layout_star_path_diamonds"
+        app:layout_constraintBottom_toBottomOf="@id/input_layout_star_path_diamonds"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_star_path_rewards"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/kappa_section_spacing"
+        app:layout_constraintTop_toBottomOf="@id/input_layout_star_path_diamonds"
+        app:layout_constraintBottom_toTopOf="@id/text_star_path_message"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/text_star_path_message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.Kappa.Body"
+        android:textColor="@color/kappa_mint_100"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

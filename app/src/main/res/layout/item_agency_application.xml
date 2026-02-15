@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
+    android:minHeight="@dimen/kappa_list_item_compact_min_height"
+    android:layout_marginBottom="@dimen/kappa_list_item_margin_bottom"
     android:background="@drawable/bg_admin_panel_soft"
     android:orientation="vertical"
     android:padding="12dp">
@@ -12,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Agency"
-        android:textAppearance="@style/TextAppearance.Kappa.Section"
+        android:textAppearance="@style/TextAppearance.Kappa.ListTitle"
         android:textColor="@color/kappa_gold_300" />
 
     <TextView
@@ -21,10 +22,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="Status: PENDING"
-        android:textAppearance="@style/TextAppearance.Kappa.Body"
+        android:textAppearance="@style/TextAppearance.Kappa.ListBody"
         android:textColor="@color/kappa_mint_100" />
 
     <LinearLayout
+        android:id="@+id/layout_agency_app_actions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"

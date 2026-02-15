@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="82dp"
-    android:layout_marginBottom="14dp"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/kappa_list_item_min_height"
+    android:layout_marginBottom="@dimen/kappa_list_item_margin_bottom"
     android:background="@drawable/bg_inbox_row"
+    android:baselineAligned="false"
     android:gravity="center_vertical"
-    android:padding="14dp">
+    android:padding="@dimen/kappa_list_item_padding">
 
     <FrameLayout
-        android:layout_width="52dp"
-        android:layout_height="52dp">
+        android:layout_width="@dimen/kappa_list_avatar_size"
+        android:layout_height="@dimen/kappa_list_avatar_size">
 
         <ImageView
             android:id="@+id/image_inbox_avatar"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
+            android:layout_width="@dimen/kappa_list_avatar_size"
+            android:layout_height="@dimen/kappa_list_avatar_size"
             android:background="@drawable/bg_avatar_ring"
             android:padding="6dp"
             android:src="@drawable/ic_profile" />
@@ -40,15 +41,17 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/text_inbox_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="User10"
-                android:textAppearance="@style/TextAppearance.Kappa.Section"
+                android:textAppearance="@style/TextAppearance.Kappa.ListTitle"
                 android:textColor="@color/kappa_gold_300" />
 
             <TextView
@@ -62,9 +65,7 @@
                 android:paddingTop="2dp"
                 android:paddingBottom="2dp"
                 android:text="VIP"
-                android:textColor="@color/kappa_mint_100"
-                android:textSize="10sp"
-                android:textStyle="bold" />
+                android:textAppearance="@style/TextAppearance.Kappa.ListBadge" />
         </LinearLayout>
 
         <TextView
@@ -72,30 +73,39 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Esse cara é tão preguiçoso..."
-            android:textAppearance="@style/TextAppearance.Kappa.Body"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Last message preview"
+            android:textAppearance="@style/TextAppearance.Kappa.ListBody"
             android:textColor="@color/kappa_mint_100" />
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/image_inbox_action"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:background="@drawable/bg_inbox_action"
-        android:padding="8dp"
-        android:src="@drawable/ic_inbox"
-        android:tint="@color/kappa_gold_300" />
+    <FrameLayout
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="8dp">
 
-    <TextView
-        android:id="@+id/text_inbox_unread"
-        android:layout_width="22dp"
-        android:layout_height="22dp"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/bg_inbox_unread"
-        android:gravity="center"
-        android:text="1"
-        android:textColor="@color/kappa_cream"
-        android:textSize="10sp"
-        android:visibility="gone" />
+        <ImageView
+            android:id="@+id/image_inbox_action"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_inbox_action"
+            android:padding="8dp"
+            android:src="@drawable/ic_inbox"
+            android:tint="@color/kappa_gold_300" />
+
+        <TextView
+            android:id="@+id/text_inbox_unread"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="top|end"
+            android:background="@drawable/bg_inbox_unread"
+            android:gravity="center"
+            android:text="1"
+            android:textAppearance="@style/TextAppearance.Kappa.ListBadge"
+            android:textColor="@color/kappa_cream"
+            android:visibility="gone" />
+    </FrameLayout>
 
 </LinearLayout>

@@ -12,6 +12,7 @@ data class InboxItem(
     val id: String,
     val name: String,
     val message: String,
+    val targetId: String? = null,
     val badge: String? = null,
     val isOnline: Boolean = false,
     val unreadCount: Int = 0

@@ -33,9 +33,15 @@ class GooglePlayBillingService(private val config: AppConfig) {
         }
 
         val responseCode = connection.responseCode
-        val body = connection.inputStream.bufferedReader().use { it.readText() }
+        val bodyStream = if (responseCode in 200..299) {
+            connection.inputStream
+        } else {
+            connection.errorStream
+        }
+        val body = bodyStream?.bufferedReader()?.use { it.readText() }.orEmpty()
         if (responseCode !in 200..299) {
-            throw IllegalArgumentException("Google Play verification failed: $responseCode")
+            val suffix = body.takeIf { it.isNotBlank() }?.let { ": $it" }.orEmpty()
+            throw IllegalArgumentException("Google Play verification failed ($responseCode)$suffix")
         }
         return json.decodeFromString(GooglePlayPurchase.serializer(), body)
     }

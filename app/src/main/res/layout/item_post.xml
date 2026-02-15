@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
+    android:layout_marginBottom="@dimen/kappa_list_item_margin_bottom"
     app:cardCornerRadius="18dp"
     app:cardElevation="4dp"
     app:cardBackgroundColor="@color/kappa_surface"
@@ -45,21 +45,21 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:text="User"
-                android:textAppearance="@style/TextAppearance.Kappa.Section"
+                android:textAppearance="@style/TextAppearance.Kappa.ListTitle"
                 android:textColor="@color/kappa_gold_300" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/text_post_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="12dp"
-            android:text="Post content"
-            android:textAppearance="@style/TextAppearance.Kappa.Body"
-            android:textColor="@color/kappa_mint_100" />
+            <TextView
+                android:id="@+id/text_post_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="12dp"
+                android:text="Post content"
+                android:textAppearance="@style/TextAppearance.Kappa.ListBody"
+                android:textColor="@color/kappa_mint_100" />
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

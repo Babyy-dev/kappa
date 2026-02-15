@@ -10,7 +10,7 @@
     <ImageView
         android:id="@+id/image_rooms_top_bg"
         android:layout_width="0dp"
-        android:layout_height="200dp"
+        android:layout_height="@dimen/kappa_top_header_height"
         android:contentDescription="@null"
         android:scaleType="fitXY"
         android:src="@drawable/potalive_top_header"
@@ -23,8 +23,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:paddingStart="@dimen/kappa_scroll_padding_horizontal"
+        android:paddingEnd="@dimen/kappa_scroll_padding_horizontal"
         android:paddingTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,7 +32,7 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="128dp"
+            android:layout_height="@dimen/kappa_header_tab_bar_height"
             android:layout_marginBottom="12dp"
             android:background="@drawable/potalive_header">
 
@@ -46,30 +46,36 @@
 
                 <ImageButton
                     android:id="@+id/button_rooms_myroom"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="@dimen/kappa_top_action_button_size"
+                    android:layout_height="@dimen/kappa_top_action_button_size"
                     android:background="@drawable/bg_pill_teal"
                     android:contentDescription="@null"
+                    android:padding="8dp"
+                    android:scaleType="centerInside"
                     android:src="@drawable/ic_rooms"
                     android:tint="@color/kappa_cream" />
 
                 <ImageButton
                     android:id="@+id/button_rooms_notifications"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="@dimen/kappa_top_action_button_size"
+                    android:layout_height="@dimen/kappa_top_action_button_size"
                     android:layout_marginStart="8dp"
                     android:background="@drawable/bg_pill_teal"
                     android:contentDescription="@null"
+                    android:padding="8dp"
+                    android:scaleType="centerInside"
                     android:src="@drawable/ic_bell"
                     android:tint="@color/kappa_cream" />
 
                 <ImageButton
                     android:id="@+id/button_rooms_search"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="@dimen/kappa_top_action_button_size"
+                    android:layout_height="@dimen/kappa_top_action_button_size"
                     android:layout_marginStart="8dp"
                     android:background="@drawable/bg_pill_teal"
                     android:contentDescription="@null"
+                    android:padding="8dp"
+                    android:scaleType="centerInside"
                     android:src="@drawable/ic_search"
                     android:tint="@color/kappa_cream" />
             </LinearLayout>
@@ -79,10 +85,10 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
                 android:gravity="center"
-                android:paddingStart="28dp"
-                android:paddingEnd="28dp"
-                android:paddingTop="22dp"
-                android:paddingBottom="14dp"
+                android:paddingStart="@dimen/kappa_header_tab_horizontal_padding"
+                android:paddingEnd="@dimen/kappa_header_tab_horizontal_padding"
+                android:paddingTop="@dimen/kappa_header_tab_top_padding"
+                android:paddingBottom="@dimen/kappa_header_tab_bottom_padding"
                 android:weightSum="3">
 
                 <TextView
@@ -90,9 +96,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:ellipsize="end"
                     android:gravity="center"
+                    android:maxLines="1"
                     android:text="Meu"
-                    android:textAppearance="@style/TextAppearance.Kappa.Section"
+                    android:textAppearance="@style/TextAppearance.Kappa.HeaderTab"
                     android:textColor="@color/kappa_gold_300" />
 
                 <TextView
@@ -100,9 +108,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:ellipsize="end"
                     android:gravity="center"
+                    android:maxLines="1"
                     android:text="Popular"
-                    android:textAppearance="@style/TextAppearance.Kappa.Section"
+                    android:textAppearance="@style/TextAppearance.Kappa.HeaderTab"
                     android:textColor="@color/kappa_cream" />
 
                 <TextView
@@ -110,9 +120,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:ellipsize="end"
                     android:gravity="center"
+                    android:maxLines="1"
                     android:text="Postagens"
-                    android:textAppearance="@style/TextAppearance.Kappa.Section"
+                    android:textAppearance="@style/TextAppearance.Kappa.HeaderTab"
                     android:textColor="@color/kappa_cream" />
             </LinearLayout>
         </FrameLayout>
@@ -204,10 +216,10 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="140dp"
+        android:paddingStart="@dimen/kappa_scroll_padding_horizontal"
+        android:paddingEnd="@dimen/kappa_scroll_padding_horizontal"
+        android:paddingTop="@dimen/kappa_scroll_padding_top"
+        android:paddingBottom="@dimen/kappa_scroll_padding_bottom_nav"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

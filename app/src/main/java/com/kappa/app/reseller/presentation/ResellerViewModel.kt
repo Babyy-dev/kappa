@@ -129,6 +129,7 @@ class ResellerViewModel @Inject constructor(
                     _viewState.update { it.copy(message = "Coins sent. Balance ${result.balance}") }
                 }
                 .onFailure { emitMessage(it.message) }
+            refreshAll()
         }
     }
 

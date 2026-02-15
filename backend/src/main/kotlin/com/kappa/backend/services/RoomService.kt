@@ -401,7 +401,8 @@ class RoomService(
 
     fun approveSeatRequest(roomId: UUID, seatNumber: Int): String? {
         val error = transaction {
-            ensureSeats(roomId, 28)
+            val maxSeats = roomMaxSeats(roomId) ?: return@transaction "Room not found"
+            ensureSeats(roomId, maxSeats)
             val seatRow = RoomSeats.select {
                 (RoomSeats.roomId eq roomId) and (RoomSeats.seatNumber eq seatNumber)
             }.singleOrNull() ?: return@transaction "Seat not found"
@@ -436,7 +437,8 @@ class RoomService(
 
     fun rejectSeatRequest(roomId: UUID, seatNumber: Int): String? {
         val error = transaction {
-            ensureSeats(roomId, 28)
+            val maxSeats = roomMaxSeats(roomId) ?: return@transaction "Room not found"
+            ensureSeats(roomId, maxSeats)
             val seatRow = RoomSeats.select {
                 (RoomSeats.roomId eq roomId) and (RoomSeats.seatNumber eq seatNumber)
             }.singleOrNull() ?: return@transaction "Seat not found"
@@ -458,7 +460,8 @@ class RoomService(
 
     fun leaveSeat(roomId: UUID, seatNumber: Int, userId: UUID): String? {
         val error = transaction {
-            ensureSeats(roomId, 28)
+            val maxSeats = roomMaxSeats(roomId) ?: return@transaction "Room not found"
+            ensureSeats(roomId, maxSeats)
             val seatRow = RoomSeats.select {
                 (RoomSeats.roomId eq roomId) and (RoomSeats.seatNumber eq seatNumber)
             }.singleOrNull() ?: return@transaction "Seat not found"
@@ -487,7 +490,8 @@ class RoomService(
 
     fun lockSeat(roomId: UUID, seatNumber: Int): String? {
         val error = transaction {
-            ensureSeats(roomId, 28)
+            val maxSeats = roomMaxSeats(roomId) ?: return@transaction "Room not found"
+            ensureSeats(roomId, maxSeats)
             val seatRow = RoomSeats.select {
                 (RoomSeats.roomId eq roomId) and (RoomSeats.seatNumber eq seatNumber)
             }.singleOrNull() ?: return@transaction "Seat not found"
@@ -509,7 +513,8 @@ class RoomService(
 
     fun unlockSeat(roomId: UUID, seatNumber: Int): String? {
         val error = transaction {
-            ensureSeats(roomId, 28)
+            val maxSeats = roomMaxSeats(roomId) ?: return@transaction "Room not found"
+            ensureSeats(roomId, maxSeats)
             val seatRow = RoomSeats.select {
                 (RoomSeats.roomId eq roomId) and (RoomSeats.seatNumber eq seatNumber)
             }.singleOrNull() ?: return@transaction "Seat not found"
@@ -621,6 +626,11 @@ class RoomService(
     private fun shortCode(id: String): String {
         val compact = id.replace("-", "")
         return if (compact.length <= 6) compact else compact.takeLast(6)
+    }
+
+    private fun roomMaxSeats(roomId: UUID): Int? {
+        val row = Rooms.select { Rooms.id eq roomId }.singleOrNull() ?: return null
+        return row[Rooms.maxSeats] ?: 28
     }
 
     private fun emitSeatsChanged(roomId: UUID) {

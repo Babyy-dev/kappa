@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="@dimen/kappa_screen_padding">
 
     <TextView
         android:id="@+id/text_tools_title"
@@ -20,7 +20,7 @@
         android:id="@+id/text_tools_hint"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/kappa_section_spacing_small"
         android:text="Select a user from seats or enter a user id to moderate."
         android:textAppearance="@style/TextAppearance.Kappa.Body"
         android:textColor="@color/kappa_mint_100"
@@ -32,7 +32,7 @@
         android:id="@+id/recycler_tools_seats"
         android:layout_width="0dp"
         android:layout_height="160dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="@dimen/kappa_section_spacing"
         android:overScrollMode="never"
         app:layout_constraintTop_toBottomOf="@id/text_tools_hint"
         app:layout_constraintStart_toStartOf="parent"
@@ -42,7 +42,7 @@
         android:id="@+id/input_layout_tools_user"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="@dimen/kappa_section_spacing"
         android:hint="User ID"
         style="@style/Widget.Kappa.TextInput"
         app:layout_constraintTop_toBottomOf="@id/recycler_tools_seats"
@@ -61,7 +61,7 @@
         android:id="@+id/layout_tools_actions"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/kappa_section_spacing_small"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/input_layout_tools_user"
         app:layout_constraintStart_toStartOf="parent"
@@ -107,7 +107,7 @@
         android:id="@+id/text_tools_status"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/kappa_section_spacing_small"
         android:text=""
         android:textAppearance="@style/TextAppearance.Kappa.Muted"
         android:textColor="@color/kappa_text_muted"

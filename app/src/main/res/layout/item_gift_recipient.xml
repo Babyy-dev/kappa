@@ -11,9 +11,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="User"
-        android:textColor="@color/kappa_mint_100"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+        android:textAppearance="@style/TextAppearance.Kappa.ListTitle"
+        android:textColor="@color/kappa_mint_100" />
 
     <TextView
         android:id="@+id/text_recipient_seat"
@@ -21,6 +20,5 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:text="Seat 1"
-        android:textColor="@color/kappa_text_muted"
-        android:textSize="10sp" />
+        android:textAppearance="@style/TextAppearance.Kappa.ListMeta" />
 </LinearLayout>

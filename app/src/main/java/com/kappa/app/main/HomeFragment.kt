@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.LinearLayout
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -14,8 +15,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
 import com.kappa.app.R
+import com.kappa.app.core.network.ApiService
+import com.kappa.app.core.network.model.InboxMessageRequest
+import com.kappa.app.core.storage.PreferencesManager
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlinx.coroutines.launch
 
 /**
@@ -23,6 +31,12 @@ import kotlinx.coroutines.launch
  */
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
+
+    @Inject
+    lateinit var apiService: ApiService
+
+    @Inject
+    lateinit var preferencesManager: PreferencesManager
 
     private lateinit var inboxAdapter: InboxAdapter
     private lateinit var friendsAdapter: InboxAdapter
@@ -45,7 +59,7 @@ class HomeFragment : Fragment() {
         val friendsRecycler = view.findViewById<RecyclerView>(R.id.recycler_inbox_friends)
         inboxAdapter = InboxAdapter { item ->
             viewModel.markThreadRead(item.id)
-            Toast.makeText(requireContext(), "Opened chat with ${item.name}", Toast.LENGTH_SHORT).show()
+            showThreadDialog(item)
         }
         friendsAdapter = InboxAdapter { item ->
             Toast.makeText(requireContext(), "Opened profile for ${item.name}", Toast.LENGTH_SHORT).show()
@@ -165,5 +179,90 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun showThreadDialog(item: InboxItem) {
+        val context = requireContext()
+        val rowsAdapter = SimpleRowAdapter()
+        val container = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(24, 12, 24, 12)
+        }
+        val messagesRecycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = rowsAdapter
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                600
+            )
+        }
+        val composer = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        }
+        val messageInput = TextInputEditText(context).apply {
+            hint = "Type message"
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+        val sendButton = MaterialButton(context).apply {
+            text = "Send"
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        }
+        composer.addView(messageInput)
+        composer.addView(sendButton)
+        container.addView(messagesRecycler)
+        container.addView(composer)
+
+        val dialog = MaterialAlertDialogBuilder(context)
+            .setTitle(item.name)
+            .setView(container)
+            .setNegativeButton("Close", null)
+            .create()
+
+        fun refreshMessages() {
+            viewLifecycleOwner.lifecycleScope.launch {
+                val currentUserId = preferencesManager.getUserIdOnce()
+                val response = runCatching { apiService.getInboxThreadMessages(item.id, 100) }.getOrNull()
+                val rows = response?.data.orEmpty().map { message ->
+                    val sender = if (message.senderId == currentUserId) "You" else item.name
+                    sender to message.message
+                }
+                rowsAdapter.submitRows(rows.ifEmpty { listOf("No messages yet" to "") })
+                viewModel.markThreadRead(item.id)
+            }
+        }
+
+        sendButton.setOnClickListener {
+            val targetId = item.targetId
+            val text = messageInput.text?.toString()?.trim().orEmpty()
+            if (targetId.isNullOrBlank() || text.isBlank()) {
+                return@setOnClickListener
+            }
+            viewLifecycleOwner.lifecycleScope.launch {
+                val sent = runCatching {
+                    apiService.sendInboxMessage(InboxMessageRequest(targetId, text))
+                }.getOrNull()
+                if (sent?.success == true) {
+                    messageInput.setText("")
+                    refreshMessages()
+                    viewModel.loadAll()
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        sent?.error ?: "Failed to send message",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+
+        dialog.setOnShowListener { refreshMessages() }
+        dialog.show()
     }
 }

@@ -161,7 +161,18 @@ class RoomsFragment : Fragment() {
 
         searchAdapter = RoomsSearchAdapter { item ->
             when (item) {
-                is SearchResultItem.Room -> audioViewModel.joinRoom(item.id)
+                is SearchResultItem.Room -> {
+                    if (item.requiresPassword) {
+                        val room = audioViewModel.viewState.value.rooms.firstOrNull { it.id == item.id }
+                        if (room != null) {
+                            showPasswordPrompt(room)
+                        } else {
+                            Toast.makeText(requireContext(), "Password required for this room", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        audioViewModel.joinRoom(item.id)
+                    }
+                }
                 else -> Toast.makeText(requireContext(), "Open ${item}", Toast.LENGTH_SHORT).show()
             }
         }
@@ -284,8 +295,14 @@ class RoomsFragment : Fragment() {
                         if (lastNavigatedRoomId != activeRoom.id &&
                             findNavController().currentDestination?.id == R.id.navigation_rooms
                         ) {
-                            lastNavigatedRoomId = activeRoom.id
-                            findNavController().navigate(R.id.navigation_room_detail)
+                            runCatching {
+                                findNavController().navigate(R.id.navigation_room_detail)
+                            }.onSuccess {
+                                lastNavigatedRoomId = activeRoom.id
+                            }.onFailure { throwable ->
+                                errorText.text = throwable.message ?: "Unable to open room"
+                                errorText.visibility = View.VISIBLE
+                            }
                         }
                     }
                 }
@@ -308,17 +325,17 @@ class RoomsFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             val response = runCatching { apiService.getHomePosts() }.getOrElse { error ->
                 Toast.makeText(requireContext(), "Failed to load posts: ${error.message}", Toast.LENGTH_SHORT).show()
-                postsAdapter.submitList(buildSamplePosts())
+                postsAdapter.submitList(emptyList())
                 return@launch
             }
 
             if (response.success) {
                 val posts = response.data.orEmpty().map { mapPost(it) }
-                postsAdapter.submitList(if (posts.isEmpty()) buildSamplePosts() else posts)
+                postsAdapter.submitList(posts)
             } else {
                 val message = response.message ?: response.error ?: "Failed to load posts"
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-                postsAdapter.submitList(buildSamplePosts())
+                postsAdapter.submitList(emptyList())
             }
         }
     }
@@ -337,17 +354,17 @@ class RoomsFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             val response = runCatching { apiService.getFriends() }.getOrElse { error ->
                 Toast.makeText(requireContext(), "Failed to load followers: ${error.message}", Toast.LENGTH_SHORT).show()
-                followersAdapter.submitList(buildSampleFollowers())
+                followersAdapter.submitList(emptyList())
                 return@launch
             }
 
             if (response.success) {
                 val followers = response.data.orEmpty().map { mapFollower(it) }
-                followersAdapter.submitList(if (followers.isEmpty()) buildSampleFollowers() else followers)
+                followersAdapter.submitList(followers)
             } else {
                 val message = response.message ?: response.error ?: "Failed to load followers"
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-                followersAdapter.submitList(buildSampleFollowers())
+                followersAdapter.submitList(emptyList())
             }
         }
     }
@@ -401,7 +418,9 @@ class RoomsFragment : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 audioViewModel.viewState.collect { state ->
                     val results = buildList<SearchResultItem> {
-                        state.searchResults.rooms.forEach { add(SearchResultItem.Room(it.id, it.name)) }
+                        state.searchResults.rooms.forEach {
+                            add(SearchResultItem.Room(it.id, it.name, it.requiresPassword))
+                        }
                         state.searchResults.users.forEach { add(SearchResultItem.User(it.id, it.nickname ?: it.username)) }
                         state.searchResults.agencies.forEach { add(SearchResultItem.Agency(it.id, it.name)) }
                     }
@@ -440,36 +459,6 @@ class RoomsFragment : Fragment() {
             .setMessage(message)
             .setPositiveButton("Close", null)
             .show()
-    }
-
-    private fun buildSamplePosts(): List<UserPost> {
-        return listOf(
-            UserPost(
-                id = "post-1",
-                userName = "Layla",
-                content = "New live room opened! Join us for music and chat.",
-                imageRes = R.drawable.bg_room_thumbnail
-            ),
-            UserPost(
-                id = "post-2",
-                userName = "Ayman",
-                content = "Hosting a desert vibes room tonight. See you there!",
-                imageRes = R.drawable.bg_room_thumbnail
-            ),
-            UserPost(
-                id = "post-3",
-                userName = "Sofia",
-                content = "Check out my latest room theme and decorations.",
-                imageRes = R.drawable.bg_room_thumbnail
-            )
-        )
-    }
-
-    private fun buildSampleFollowers(): List<FollowerItem> {
-        return listOf(
-            FollowerItem(id = "demo-1", name = "Sala VIP", meta = "ID: 002230", badge = "VIP"),
-            FollowerItem(id = "demo-2", name = "Sala favorito", meta = "ID: 002231", badge = "0")
-        )
     }
 
     private fun showCreateRoomDialog() {

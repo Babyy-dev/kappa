@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="@dimen/kappa_screen_padding">
 
     <TextView
         android:id="@+id/text_gift_title"
@@ -20,7 +20,7 @@
         android:id="@+id/chip_group_gift_category"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/kappa_section_spacing_small"
         app:singleSelection="true"
         app:chipSpacing="8dp"
         app:layout_constraintTop_toBottomOf="@id/text_gift_title"
@@ -31,7 +31,7 @@
         android:id="@+id/text_gift_targets"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/kappa_section_spacing_small"
         android:text="Send to"
         android:textAppearance="@style/TextAppearance.Kappa.Body"
         android:textColor="@color/kappa_mint_100"
@@ -54,7 +54,7 @@
         android:id="@+id/text_gift_recipients"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/kappa_section_spacing_small"
         android:text="Select recipients"
         android:textAppearance="@style/TextAppearance.Kappa.Body"
         android:textColor="@color/kappa_mint_100"
@@ -77,7 +77,7 @@
         android:id="@+id/recycler_gift_catalog"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/kappa_section_spacing_small"
         android:background="@drawable/bg_card_glass"
         android:padding="8dp"
         app:layout_constraintTop_toBottomOf="@id/recycler_gift_recipients"
@@ -89,7 +89,7 @@
         android:id="@+id/gift_action_bar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="@dimen/kappa_section_spacing"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

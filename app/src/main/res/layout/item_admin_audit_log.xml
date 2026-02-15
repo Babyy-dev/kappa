@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
+    android:minHeight="@dimen/kappa_list_item_compact_min_height"
+    android:layout_marginBottom="@dimen/kappa_list_item_margin_bottom"
     android:background="@drawable/bg_admin_panel_soft"
     android:orientation="vertical"
     android:padding="12dp">
@@ -12,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="ACTION"
-        android:textAppearance="@style/TextAppearance.Kappa.Section"
+        android:textAppearance="@style/TextAppearance.Kappa.ListTitle"
         android:textColor="@color/kappa_gold_300" />
 
     <TextView
@@ -21,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="Details..."
-        android:textAppearance="@style/TextAppearance.Kappa.Body"
+        android:textAppearance="@style/TextAppearance.Kappa.ListBody"
         android:textColor="@color/kappa_mint_100" />
 
     <TextView
@@ -30,6 +31,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="Time"
-        android:textAppearance="@style/TextAppearance.Kappa.Muted"
+        android:textAppearance="@style/TextAppearance.Kappa.ListMeta"
         android:textColor="@color/kappa_text_muted" />
 </LinearLayout>

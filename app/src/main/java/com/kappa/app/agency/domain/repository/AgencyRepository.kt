@@ -7,8 +7,10 @@ import com.kappa.app.agency.domain.model.Team
 import kotlin.Result
 
 interface AgencyRepository {
+    suspend fun getCurrentRole(): Result<String>
     suspend fun getAgencyApplications(): Result<List<AgencyApplication>>
     suspend fun getResellerApplications(): Result<List<ResellerApplication>>
+    suspend fun getAdminResellerApplications(): Result<List<ResellerApplication>>
     suspend fun applyForAgency(name: String): Result<AgencyApplication>
     suspend fun applyForReseller(): Result<ResellerApplication>
     suspend fun listTeams(): Result<List<Team>>
@@ -18,6 +20,8 @@ interface AgencyRepository {
     suspend fun listMyCommissions(limit: Int = 20): Result<List<AgencyCommission>>
     suspend fun approveAgencyApplication(id: String): Result<Unit>
     suspend fun rejectAgencyApplication(id: String): Result<Unit>
+    suspend fun approveResellerApplication(id: String): Result<Unit>
+    suspend fun rejectResellerApplication(id: String): Result<Unit>
     suspend fun listAgencyRooms(): Result<List<Pair<String, String>>>
     suspend fun listAgencyHosts(): Result<List<Pair<String, String>>>
 }

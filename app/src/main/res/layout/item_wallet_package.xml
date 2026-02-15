@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
+    android:layout_marginBottom="@dimen/kappa_list_item_margin_bottom"
     app:cardBackgroundColor="@color/kappa_teal_800"
     app:cardCornerRadius="16dp"
     app:cardElevation="4dp">
@@ -11,6 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="@dimen/kappa_list_item_min_height"
         android:padding="16dp">
 
         <TextView
@@ -18,8 +19,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Starter Pack"
-            android:textAppearance="@style/TextAppearance.Kappa.Body"
-            android:textColor="@color/kappa_gold_300"
+            android:textAppearance="@style/TextAppearance.Kappa.ListTitle"
             app:layout_constraintEnd_toStartOf="@id/button_wallet_buy"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:text="1000 coins"
-            android:textAppearance="@style/TextAppearance.Kappa.Muted"
+            android:textAppearance="@style/TextAppearance.Kappa.ListMeta"
             android:textColor="@color/kappa_mint_100"
             app:layout_constraintEnd_toStartOf="@id/button_wallet_buy"
             app:layout_constraintStart_toStartOf="parent"
@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:text="$2.99"
-            android:textAppearance="@style/TextAppearance.Kappa.Body"
+            android:textAppearance="@style/TextAppearance.Kappa.ListBody"
             android:textColor="@color/kappa_mint_100"
             app:layout_constraintEnd_toStartOf="@id/button_wallet_buy"
             app:layout_constraintStart_toStartOf="parent"
@@ -50,12 +50,10 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_wallet_buy"
+            style="@style/Widget.Kappa.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Buy"
-            android:textColor="@color/kappa_teal_900"
-            app:backgroundTint="@color/kappa_gold_300"
-            app:cornerRadius="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="14dp"
+    android:layout_marginBottom="@dimen/kappa_list_item_margin_bottom"
     app:cardCornerRadius="18dp"
     app:cardElevation="3dp"
     app:cardBackgroundColor="@android:color/transparent"
@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Lucky Draw"
-            android:textAppearance="@style/TextAppearance.Kappa.Section"
+            android:textAppearance="@style/TextAppearance.Kappa.ListTitle"
             android:textColor="@color/kappa_gold_300" />
 
         <TextView
@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:text="Spin and win rewards"
-            android:textAppearance="@style/TextAppearance.Kappa.Body"
+            android:textAppearance="@style/TextAppearance.Kappa.ListBody"
             android:textColor="@color/kappa_mint_100" />
 
         <TextView
@@ -40,8 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:text="Entry: 200 coins"
-            android:textAppearance="@style/TextAppearance.Kappa.Muted"
-            android:textColor="@color/kappa_mint_100" />
+            android:textAppearance="@style/TextAppearance.Kappa.ListMeta" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_game_join"

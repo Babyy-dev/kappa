@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="@dimen/kappa_screen_padding">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_room_messages"
@@ -20,7 +20,7 @@
         android:id="@+id/recycler_room_messages"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/kappa_section_spacing_small"
         android:background="@drawable/bg_card_glass"
         android:padding="8dp"
         app:layout_constraintTop_toBottomOf="@id/tab_room_messages"
@@ -32,7 +32,7 @@
         android:id="@+id/input_message_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="@dimen/kappa_section_spacing"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -51,7 +51,7 @@
             style="@style/Widget.Kappa.Button.Glow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="@dimen/kappa_section_spacing_small"
             android:text="Send" />
     </LinearLayout>
 

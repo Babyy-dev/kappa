@@ -21,6 +21,7 @@ import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.QueryPurchasesParams
 import com.kappa.app.R
 import com.kappa.app.domain.economy.CoinPackage
 import com.kappa.app.economy.presentation.EconomyViewModel
@@ -101,6 +102,7 @@ class WalletFragment : Fragment() {
             override fun onBillingSetupFinished(billingResult: BillingResult) {
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     queryProductDetails(cachedPackages)
+                    queryExistingPurchases()
                 }
             }
 
@@ -161,6 +163,20 @@ class WalletFragment : Fragment() {
             .setProductDetailsParamsList(listOf(productParams))
             .build()
         billingClient?.launchBillingFlow(requireActivity(), billingParams)
+    }
+
+    private fun queryExistingPurchases() {
+        val client = billingClient
+        if (client == null || !client.isReady) return
+        val params = QueryPurchasesParams.newBuilder()
+            .setProductType(BillingClient.ProductType.INAPP)
+            .build()
+        client.queryPurchasesAsync(params) { billingResult, purchases ->
+            if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
+                return@queryPurchasesAsync
+            }
+            purchases.forEach { handlePurchase(it) }
+        }
     }
 
     private fun handlePurchase(purchase: Purchase) {

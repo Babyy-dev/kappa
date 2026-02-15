@@ -16,6 +16,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.kappa.app.R
 import com.kappa.app.agency.presentation.AgencyApplicationAdapter
 import com.kappa.app.agency.presentation.AgencyViewModel
+import com.kappa.app.agency.presentation.ResellerApplicationAdapter
 import com.kappa.app.main.SimpleRowAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -47,6 +48,7 @@ class AgencyToolsFragment : Fragment() {
         val roomsRecycler = view.findViewById<RecyclerView>(R.id.recycler_agency_rooms)
         val hostsRecycler = view.findViewById<RecyclerView>(R.id.recycler_agency_hosts)
         val appsRecycler = view.findViewById<RecyclerView>(R.id.recycler_agency_applications)
+        val resellerAppsRecycler = view.findViewById<RecyclerView>(R.id.recycler_reseller_applications)
         val teamsRecycler = view.findViewById<RecyclerView>(R.id.recycler_agency_teams)
         val commissionsRecycler = view.findViewById<RecyclerView>(R.id.recycler_agency_commissions)
 
@@ -56,11 +58,16 @@ class AgencyToolsFragment : Fragment() {
             onApprove = { app -> agencyViewModel.approveApplication(app.id) },
             onReject = { app -> agencyViewModel.rejectApplication(app.id) }
         )
+        val resellerAppsAdapter = ResellerApplicationAdapter(
+            onApprove = { app -> agencyViewModel.approveResellerApplication(app.id) },
+            onReject = { app -> agencyViewModel.rejectResellerApplication(app.id) }
+        )
         val teamsAdapter = SimpleRowAdapter()
         val commissionsAdapter = SimpleRowAdapter()
         roomsRecycler.adapter = roomsAdapter
         hostsRecycler.adapter = hostsAdapter
         appsRecycler.adapter = appsAdapter
+        resellerAppsRecycler.adapter = resellerAppsAdapter
         teamsRecycler.adapter = teamsAdapter
         commissionsRecycler.adapter = commissionsAdapter
 
@@ -85,8 +92,8 @@ class AgencyToolsFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 agencyViewModel.viewState.collect { state ->
-                    val status = "Applications: ${if (state.agencyApplication == null) 0 else 1}" +
-                        " • Teams: ${state.teams.size} • Commissions: ${state.commissions.size}"
+                    val status = "Applications: ${state.agencyApplications.size + state.resellerApplications.size}" +
+                        " | Teams: ${state.teams.size} | Commissions: ${state.commissions.size} | Role: ${state.currentRole}"
                     statusText.text = status
                     if (state.actionMessage != null) {
                         messageText.text = state.actionMessage
@@ -101,14 +108,19 @@ class AgencyToolsFragment : Fragment() {
                     totalDiamondsText.text = "Total: $totalDiamonds"
                     roomsAdapter.submitRows(state.rooms)
                     hostsAdapter.submitRows(state.hosts)
-                    appsAdapter.submitItems(state.agencyApplications)
+                    appsAdapter.submitItems(state.agencyApplications, state.canReviewApplications)
+                    resellerAppsAdapter.submitItems(state.resellerApplications, state.canReviewApplications)
                     teamsAdapter.submitRows(state.teams.map { it.name to "Owner: ${it.ownerUserId}" })
                     commissionsAdapter.submitRows(
-                        state.commissions.map { it.id to "Diamonds: ${it.diamondsAmount} • USD ${it.commissionUsd}" }
+                        state.commissions.map { it.id to "Diamonds: ${it.diamondsAmount} | USD ${it.commissionUsd}" }
                     )
+                    val role = state.currentRole.uppercase()
+                    val canApply = role != "ADMIN" && role != "AGENCY" && role.isNotBlank()
+                    applyAgencyButton.visibility = if (canApply) View.VISIBLE else View.GONE
+                    applyResellerButton.visibility = if (canApply) View.VISIBLE else View.GONE
                     createTeamButton.isEnabled = !state.isRefreshing
-                    applyAgencyButton.isEnabled = !state.isRefreshing
-                    applyResellerButton.isEnabled = !state.isRefreshing
+                    applyAgencyButton.isEnabled = !state.isRefreshing && canApply
+                    applyResellerButton.isEnabled = !state.isRefreshing && canApply
                     refreshButton.isEnabled = !state.isRefreshing
                 }
             }

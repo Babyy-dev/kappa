@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="@dimen/kappa_section_spacing_small"
     android:orientation="vertical">
 
     <LinearLayout
@@ -15,9 +15,10 @@
             android:id="@+id/text_message_user"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="User"
-            android:textAppearance="@style/TextAppearance.Kappa.Section"
-            android:textColor="@color/kappa_gold_300" />
+            android:textAppearance="@style/TextAppearance.Kappa.ListTitle" />
 
         <TextView
             android:id="@+id/text_message_body"
@@ -25,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:text="Message"
-            android:textAppearance="@style/TextAppearance.Kappa.Body"
+            android:textAppearance="@style/TextAppearance.Kappa.ListBody"
             android:textColor="@color/kappa_mint_100" />
     </LinearLayout>
 </LinearLayout>

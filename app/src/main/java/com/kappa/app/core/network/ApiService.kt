@@ -4,6 +4,7 @@ import com.kappa.app.core.network.model.CoinBalanceDto
 import com.kappa.app.core.network.model.CoinPackageDto
 import com.kappa.app.core.network.model.CoinPurchaseDto
 import com.kappa.app.core.network.model.CoinTransactionDto
+import com.kappa.app.core.network.model.DiamondBalanceDto
 import com.kappa.app.core.network.model.GuestLoginRequest
 import com.kappa.app.core.network.model.GiftSendDto
 import com.kappa.app.core.network.model.GiftSendRequest
@@ -73,6 +74,9 @@ import com.kappa.app.core.network.model.SearchResultDto
 import com.kappa.app.core.network.model.AgencyRoomDto
 import com.kappa.app.core.network.model.AgencyHostDto
 import com.kappa.app.core.network.model.GooglePlayVerifyRequestDto
+import com.kappa.app.core.network.model.AnnouncementDto
+import com.kappa.app.core.network.model.RewardRequestCreateDto
+import com.kappa.app.core.network.model.RewardRequestDto
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -129,6 +133,18 @@ interface ApiService {
 
     @GET("coin-packages")
     suspend fun getCoinPackages(): BaseApiResponse<List<CoinPackageDto>>
+
+    @GET("diamonds/balance")
+    suspend fun getDiamondBalance(): BaseApiResponse<DiamondBalanceDto>
+
+    @GET("rewards/requests")
+    suspend fun getRewardRequests(): BaseApiResponse<List<RewardRequestDto>>
+
+    @POST("rewards/request")
+    suspend fun createRewardRequest(@Body request: RewardRequestCreateDto): BaseApiResponse<RewardRequestDto>
+
+    @GET("announcements")
+    suspend fun getAnnouncements(): BaseApiResponse<List<AnnouncementDto>>
 
     @POST("billing/google/verify")
     suspend fun verifyGooglePlayPurchase(
@@ -247,6 +263,12 @@ interface ApiService {
     @GET("inbox/threads")
     suspend fun getInboxThreads(): BaseApiResponse<List<InboxThreadDto>>
 
+    @GET("inbox/threads/{id}/messages")
+    suspend fun getInboxThreadMessages(
+        @Path("id") id: String,
+        @Query("limit") limit: Int? = null
+    ): BaseApiResponse<List<InboxMessageResponse>>
+
     @POST("inbox/message")
     suspend fun sendInboxMessage(@Body request: InboxMessageRequest): BaseApiResponse<InboxMessageResponse>
 
@@ -362,6 +384,15 @@ interface ApiService {
 
     @GET("reseller/applications/me")
     suspend fun getMyResellerApplications(): BaseApiResponse<List<ResellerApplicationDto>>
+
+    @GET("admin/reseller-applications")
+    suspend fun getAdminResellerApplications(): BaseApiResponse<List<ResellerApplicationDto>>
+
+    @POST("admin/reseller-applications/{id}/approve")
+    suspend fun approveResellerApplication(@Path("id") id: String): BaseApiResponse<Unit>
+
+    @POST("admin/reseller-applications/{id}/reject")
+    suspend fun rejectResellerApplication(@Path("id") id: String): BaseApiResponse<Unit>
 
     @POST("teams")
     suspend fun createTeam(@Body request: TeamCreateRequestDto): BaseApiResponse<TeamDto>

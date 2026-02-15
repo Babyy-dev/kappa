@@ -10,6 +10,7 @@ data class AgencyApplication(
 
 data class ResellerApplication(
     val id: String,
+    val userId: String,
     val status: String,
     val createdAt: Long,
     val reviewedAt: Long?

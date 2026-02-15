@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_screen_emerald"
-    android:padding="16dp">
+    android:padding="@dimen/kappa_screen_padding">
 
     <TextView
         android:id="@+id/text_wallet_title"
@@ -20,7 +20,7 @@
         android:id="@+id/text_wallet_balance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/kappa_section_spacing_large"
         android:text="Balance: 0 coins"
         android:textAppearance="@style/TextAppearance.Kappa.Body"
         android:textColor="@color/kappa_mint_100"
@@ -31,7 +31,7 @@
         android:id="@+id/text_wallet_status"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/kappa_section_spacing_small"
         android:text=""
         android:textAppearance="@style/TextAppearance.Kappa.Muted"
         android:textColor="@color/kappa_gold_300"
@@ -43,9 +43,9 @@
         android:id="@+id/recycler_wallet_packages"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/kappa_section_spacing_large"
         android:clipToPadding="false"
-        android:paddingBottom="16dp"
+        android:paddingBottom="@dimen/kappa_section_spacing_large"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

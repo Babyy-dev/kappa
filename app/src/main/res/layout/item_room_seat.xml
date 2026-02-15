@@ -19,8 +19,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="No.1"
-            android:textAppearance="@style/TextAppearance.Kappa.Section"
-            android:textColor="@color/kappa_cream" />
+            android:textAppearance="@style/TextAppearance.Kappa.ListTitle"
+            android:textColor="@color/kappa_cream"
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/text_seat_status"
@@ -28,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Open"
-            android:textAppearance="@style/TextAppearance.Kappa.Muted"
+            android:textAppearance="@style/TextAppearance.Kappa.ListMeta"
             android:textColor="@color/kappa_mint_100" />
     </LinearLayout>
 </FrameLayout>

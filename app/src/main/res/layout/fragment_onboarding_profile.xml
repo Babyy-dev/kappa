@@ -11,7 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp">
+        android:padding="@dimen/kappa_screen_padding_form">
 
         <ImageView
             android:id="@+id/image_onboarding_profile"
@@ -130,6 +130,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_onboarding_avatar"
+                    style="@style/Widget.Kappa.Button.Secondary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/onboarding_profile_avatar" />

@@ -73,8 +73,8 @@ class RoomChatFragment : Fragment() {
                         state.messages.filterNot { it.messageType.equals("REWARD", ignoreCase = true) }
                     }
                     messagesAdapter.submitList(filtered)
-                    if (state.messages.isNotEmpty()) {
-                        recycler.scrollToPosition((filtered.size - 1).coerceAtLeast(0))
+                    if (filtered.isNotEmpty()) {
+                        recycler.scrollToPosition(filtered.lastIndex)
                     }
                 }
             }

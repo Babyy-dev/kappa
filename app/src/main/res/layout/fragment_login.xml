@@ -11,7 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp">
+        android:padding="@dimen/kappa_screen_padding_form">
 
         <!-- Logo/Icon at top -->
         <ImageView
@@ -73,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_admin_panel"
                 android:orientation="vertical"
-                android:padding="24dp">
+                android:padding="@dimen/kappa_screen_padding_form">
 
                 <LinearLayout
                     android:id="@+id/layout_login_password"
@@ -208,6 +208,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/button_send_otp"
+                        style="@style/Widget.Kappa.Button.Secondary"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
@@ -215,6 +216,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/button_verify_otp"
+                        style="@style/Widget.Kappa.Button.Glow"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
+    android:layout_marginBottom="@dimen/kappa_list_item_margin_bottom"
     app:cardCornerRadius="18dp"
     app:cardElevation="2dp"
     app:cardBackgroundColor="@android:color/transparent"
@@ -13,6 +13,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="@dimen/kappa_list_item_compact_min_height"
         android:background="@drawable/bg_admin_panel_soft"
         android:orientation="vertical"
         android:padding="14dp">
@@ -22,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Config"
-            android:textAppearance="@style/TextAppearance.Kappa.Section"
+            android:textAppearance="@style/TextAppearance.Kappa.ListTitle"
             android:textColor="@color/kappa_gold_300" />
 
         <TextView
@@ -31,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Details"
-            android:textAppearance="@style/TextAppearance.Kappa.Body"
+            android:textAppearance="@style/TextAppearance.Kappa.ListBody"
             android:textColor="@color/kappa_mint_100" />
 
         <LinearLayout
@@ -43,7 +44,7 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_admin_edit"
                 android:layout_width="0dp"
-                android:layout_height="36dp"
+                android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
                 android:text="Edit"
@@ -52,7 +53,7 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_admin_delete"
                 android:layout_width="0dp"
-                android:layout_height="36dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Delete"
                 style="@style/Widget.Kappa.Button.Secondary" />

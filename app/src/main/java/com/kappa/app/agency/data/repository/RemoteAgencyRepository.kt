@@ -25,6 +25,14 @@ class RemoteAgencyRepository @Inject constructor(
     private val errorMapper: ErrorMapper
 ) : AgencyRepository {
 
+    override suspend fun getCurrentRole(): Result<String> {
+        return safeCall(
+            call = { apiService.getCurrentUser() }
+        ) { user ->
+            user.role
+        }
+    }
+
     override suspend fun getAgencyApplications(): Result<List<AgencyApplication>> {
         return safeCall<List<AgencyApplicationDto>, List<AgencyApplication>>(
             call = { apiService.getAgencyApplications() }
@@ -48,6 +56,12 @@ class RemoteAgencyRepository @Inject constructor(
     override suspend fun getResellerApplications(): Result<List<ResellerApplication>> {
         return safeCall<List<ResellerApplicationDto>, List<ResellerApplication>>(
             call = { apiService.getMyResellerApplications() }
+        ) { list -> list.map(ResellerApplicationDto::toDomain) }
+    }
+
+    override suspend fun getAdminResellerApplications(): Result<List<ResellerApplication>> {
+        return safeCall<List<ResellerApplicationDto>, List<ResellerApplication>>(
+            call = { apiService.getAdminResellerApplications() }
         ) { list -> list.map(ResellerApplicationDto::toDomain) }
     }
 
@@ -90,6 +104,18 @@ class RemoteAgencyRepository @Inject constructor(
     override suspend fun rejectAgencyApplication(id: String): Result<Unit> {
         return safeCall(
             call = { apiService.rejectAgencyApplication(id) }
+        ) { Unit }
+    }
+
+    override suspend fun approveResellerApplication(id: String): Result<Unit> {
+        return safeCall(
+            call = { apiService.approveResellerApplication(id) }
+        ) { Unit }
+    }
+
+    override suspend fun rejectResellerApplication(id: String): Result<Unit> {
+        return safeCall(
+            call = { apiService.rejectResellerApplication(id) }
         ) { Unit }
     }
 

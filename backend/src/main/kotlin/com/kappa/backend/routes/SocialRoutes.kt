@@ -37,6 +37,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.greater
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.neq
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
@@ -51,7 +52,9 @@ fun Route.socialRoutes(systemMessageService: SystemMessageService) {
         val threads = transaction {
             InboxThreads.select {
                 (InboxThreads.userA eq userUuid) or (InboxThreads.userB eq userUuid)
-            }.map { row ->
+            }
+                .orderBy(InboxThreads.updatedAt, SortOrder.DESC)
+                .map { row ->
                 val peerId = if (row[InboxThreads.userA] == userUuid) row[InboxThreads.userB] else row[InboxThreads.userA]
                 val peer = Users.select { Users.id eq peerId }.singleOrNull()
                 val readRow = InboxThreadReads.select {
@@ -74,6 +77,58 @@ fun Route.socialRoutes(systemMessageService: SystemMessageService) {
             }
         }
         call.respond(ApiResponse(success = true, data = threads))
+    }
+
+    get("inbox/threads/{id}/messages") {
+        val principal = call.principal<JWTPrincipal>()
+        val userId = principal?.subject ?: return@get call.respond(
+            HttpStatusCode.Unauthorized,
+            ApiResponse<Unit>(success = false, error = "Unauthorized")
+        )
+        val threadId = call.parameters["id"] ?: return@get call.respond(
+            HttpStatusCode.BadRequest,
+            ApiResponse<Unit>(success = false, error = "Missing thread id")
+        )
+        val limit = call.request.queryParameters["limit"]?.toIntOrNull()?.coerceIn(1, 200) ?: 100
+        val userUuid = UUID.fromString(userId)
+        val threadUuid = runCatching { UUID.fromString(threadId) }.getOrNull()
+            ?: return@get call.respond(HttpStatusCode.BadRequest, ApiResponse<Unit>(success = false, error = "Invalid thread id"))
+
+        val threadState = transaction {
+            val thread = InboxThreads.select { InboxThreads.id eq threadUuid }.singleOrNull()
+                ?: return@transaction Triple(false, false, emptyList<InboxMessageResponse>())
+            if (thread[InboxThreads.userA] != userUuid && thread[InboxThreads.userB] != userUuid) {
+                return@transaction Triple(true, false, emptyList<InboxMessageResponse>())
+            }
+            val messages = InboxMessages.select { InboxMessages.threadId eq threadUuid }
+                .orderBy(InboxMessages.createdAt, SortOrder.DESC)
+                .limit(limit)
+                .toList()
+                .asReversed()
+                .map { row ->
+                    val sender = row[InboxMessages.senderId]
+                    val recipient = if (sender == thread[InboxThreads.userA]) thread[InboxThreads.userB] else thread[InboxThreads.userA]
+                    InboxMessageResponse(
+                        id = row[InboxMessages.id].toString(),
+                        threadId = threadUuid.toString(),
+                        senderId = sender.toString(),
+                        recipientId = recipient.toString(),
+                        message = row[InboxMessages.message],
+                        createdAt = row[InboxMessages.createdAt]
+                    )
+                }
+            Triple(true, true, messages)
+        }
+
+        val (threadExists, isParticipant, messages) = threadState
+        when {
+            !threadExists ->
+                call.respond(HttpStatusCode.NotFound, ApiResponse<Unit>(success = false, error = "Thread not found"))
+            !isParticipant ->
+                call.respond(HttpStatusCode.Forbidden, ApiResponse<Unit>(success = false, error = "Insufficient permissions"))
+            else ->
+                call.respond(ApiResponse(success = true, data = messages))
+        }
     }
 
     post("inbox/message") {

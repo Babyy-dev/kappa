@@ -191,6 +191,7 @@ class HomeViewModel @Inject constructor(
             id = id,
             name = peerName,
             message = lastMessage ?: "",
+            targetId = peerId,
             badge = null,
             isOnline = false,
             unreadCount = unreadCount
@@ -202,6 +203,7 @@ class HomeViewModel @Inject constructor(
             id = userId,
             name = nickname ?: username,
             message = "",
+            targetId = userId,
             badge = null,
             isOnline = false
         )

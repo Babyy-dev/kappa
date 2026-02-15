@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="kappa_screen_padding">16dp</dimen>
+    <dimen name="kappa_screen_padding_form">24dp</dimen>
+    <dimen name="kappa_scroll_padding_horizontal">16dp</dimen>
+    <dimen name="kappa_scroll_padding_top">12dp</dimen>
+    <dimen name="kappa_scroll_padding_bottom_nav">140dp</dimen>
+    <dimen name="kappa_top_header_height">200dp</dimen>
+    <dimen name="kappa_top_header_compact_height">92dp</dimen>
+    <dimen name="kappa_back_button_size">36dp</dimen>
+    <dimen name="kappa_back_button_margin_start">12dp</dimen>
+    <dimen name="kappa_section_spacing">12dp</dimen>
+    <dimen name="kappa_section_spacing_small">8dp</dimen>
+    <dimen name="kappa_section_spacing_large">16dp</dimen>
+    <dimen name="kappa_list_item_min_height">84dp</dimen>
+    <dimen name="kappa_list_item_compact_min_height">68dp</dimen>
+    <dimen name="kappa_list_item_padding">12dp</dimen>
+    <dimen name="kappa_list_item_margin_bottom">12dp</dimen>
+    <dimen name="kappa_list_avatar_size">52dp</dimen>
+
+    <dimen name="kappa_bottom_nav_icon_size">24dp</dimen>
+    <dimen name="kappa_bottom_nav_padding_top">10dp</dimen>
+    <dimen name="kappa_bottom_nav_padding_bottom">12dp</dimen>
+    <dimen name="kappa_bottom_nav_min_height">72dp</dimen>
+
+    <dimen name="kappa_header_tab_bar_height">120dp</dimen>
+    <dimen name="kappa_header_tab_text_size">15sp</dimen>
+    <dimen name="kappa_header_tab_horizontal_padding">24dp</dimen>
+    <dimen name="kappa_header_tab_top_padding">16dp</dimen>
+    <dimen name="kappa_header_tab_bottom_padding">12dp</dimen>
+
+    <dimen name="kappa_top_action_button_size">36dp</dimen>
+</resources>

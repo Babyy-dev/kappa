@@ -20,8 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:text="Gift"
-        android:textAppearance="@style/TextAppearance.Kappa.Body"
-        android:textColor="@color/kappa_mint_100" />
+        android:textAppearance="@style/TextAppearance.Kappa.ListBody" />
 
     <TextView
         android:id="@+id/text_gift_price"
@@ -29,6 +28,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:text="100"
-        android:textAppearance="@style/TextAppearance.Kappa.Muted"
+        android:textAppearance="@style/TextAppearance.Kappa.ListMeta"
         android:textColor="@color/kappa_gold_300" />
 </LinearLayout>

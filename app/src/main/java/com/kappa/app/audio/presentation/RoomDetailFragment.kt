@@ -21,6 +21,7 @@ import com.google.android.material.button.MaterialButton
 import com.kappa.app.R
 import com.kappa.app.core.livekit.LiveKitRoomStore
 import com.kappa.app.core.network.NetworkMonitor
+import com.kappa.app.domain.audio.GiftLog
 import dagger.hilt.android.AndroidEntryPoint
 import io.livekit.android.LiveKit
 import io.livekit.android.LiveKitOverrides
@@ -48,6 +49,7 @@ class RoomDetailFragment : Fragment() {
     private var enableEchoCancellation: Boolean = true
     private var enableNoiseSuppression: Boolean = true
     private var lastGiftId: String? = null
+    private var giftRoomId: String? = null
     private var giftOverlayJob: Job? = null
     private var micEnabledOnJoin: Boolean = true
     private var hasSelectedMic: Boolean = false
@@ -113,7 +115,16 @@ class RoomDetailFragment : Fragment() {
         }
 
         fun navigateTo(destinationId: Int, selectedCardId: Int) {
-            navController?.navigate(destinationId, null, navOptions)
+            val controller = navController ?: return
+            if (controller.currentDestination?.id == destinationId) {
+                updateSelection(selectedCardId)
+                return
+            }
+            runCatching {
+                controller.navigate(destinationId, null, navOptions)
+            }.onFailure {
+                Toast.makeText(requireContext(), "Unable to switch section", Toast.LENGTH_SHORT).show()
+            }
             updateSelection(selectedCardId)
         }
 
@@ -143,12 +154,12 @@ class RoomDetailFragment : Fragment() {
             shouldLeaveOnDestroy = true
             disconnectRoom()
             audioViewModel.leaveRoom()
-            findNavController().popBackStack()
+            runCatching { findNavController().popBackStack() }
         }
 
         minimizeButton.setOnClickListener {
             shouldLeaveOnDestroy = false
-            findNavController().navigate(R.id.navigation_rooms)
+            runCatching { findNavController().navigate(R.id.navigation_rooms) }
         }
 
         favoriteButton.setOnClickListener {
@@ -204,10 +215,19 @@ class RoomDetailFragment : Fragment() {
                         errorText.visibility = View.GONE
                         lastErrorMessage = null
                     }
+                    val activeRoomId = state.activeRoom?.id
+                    if (giftRoomId != activeRoomId) {
+                        giftRoomId = activeRoomId
+                        lastGiftId = null
+                    }
                     val latestGift = state.gifts.lastOrNull()
-                    if (latestGift != null && latestGift.id != lastGiftId) {
-                        lastGiftId = latestGift.id
-                        showGiftOverlay(giftOverlayText, giftOverlayIcon, "Gift +${latestGift.amount} coins")
+                    if (latestGift != null) {
+                        if (lastGiftId == null) {
+                            lastGiftId = latestGift.id
+                        } else if (latestGift.id != lastGiftId) {
+                            lastGiftId = latestGift.id
+                            showGiftOverlay(giftOverlayText, giftOverlayIcon, buildGiftOverlayMessage(latestGift))
+                        }
                     }
                     val unread = state.unreadRoomMessages
                     if (unread > 0) {
@@ -376,6 +396,23 @@ class RoomDetailFragment : Fragment() {
                 .setDuration(220)
                 .withEndAction { icon.visibility = View.GONE }
                 .start()
+        }
+    }
+
+    private fun buildGiftOverlayMessage(gift: GiftLog): String {
+        val targetLabel = when {
+            gift.recipientCount != null && gift.recipientCount > 1 -> "${gift.recipientCount} recipients"
+            gift.recipientId != null -> "1 recipient"
+            else -> "room"
+        }
+        val typeLabel = gift.giftType
+            ?.replace('_', ' ')
+            ?.trim()
+            ?.ifBlank { null }
+        return if (typeLabel == null) {
+            "Gift +${gift.amount} coins"
+        } else {
+            "$typeLabel +${gift.amount} coins to $targetLabel"
         }
     }
 

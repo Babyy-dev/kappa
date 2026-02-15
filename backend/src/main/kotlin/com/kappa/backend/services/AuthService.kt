@@ -37,6 +37,7 @@ class AuthService(
 ) {
     private val tokenService = TokenService(config)
     private val otpTtlMillis = 5 * 60 * 1000L
+    private val e164Regex = Regex("^\\+[1-9]\\d{7,14}$")
 
     enum class SignupFailureReason {
         USERNAME_TAKEN,
@@ -47,6 +48,7 @@ class AuthService(
         AGENCY_NOT_FOUND,
         WEAK_PASSWORD,
         INVALID_INPUT,
+        INVALID_PHONE,
         OTP_FAILED
     }
 
@@ -99,13 +101,16 @@ class AuthService(
         val username = request.username.trim()
         val email = request.email.trim()
         val password = request.password
-        val phone = request.phone?.trim().orEmpty()
+        val phone = normalizePhone(request.phone)
 
         if (username.isBlank() || email.isBlank() || password.isBlank()) {
             return SignupResult(failure = SignupFailureReason.INVALID_INPUT)
         }
         if (phone.isBlank()) {
             return SignupResult(failure = SignupFailureReason.PHONE_REQUIRED)
+        }
+        if (!isValidPhone(phone)) {
+            return SignupResult(failure = SignupFailureReason.INVALID_PHONE)
         }
         if (password.length < 6) {
             return SignupResult(failure = SignupFailureReason.WEAK_PASSWORD)
@@ -267,8 +272,8 @@ class AuthService(
     }
 
     fun requestOtp(request: PhoneOtpRequest): OtpSendResult {
-        val phone = request.phone.trim()
-        if (phone.isBlank()) {
+        val phone = normalizePhone(request.phone)
+        if (!isValidPhone(phone)) {
             return OtpSendResult(failure = OtpFailureReason.INVALID_PHONE)
         }
         val code = Random.nextInt(100000, 999999).toString()
@@ -302,9 +307,9 @@ class AuthService(
     }
 
     fun verifyOtp(request: PhoneOtpVerifyRequest): LoginResponse? {
-        val phone = request.phone.trim()
+        val phone = normalizePhone(request.phone)
         val code = request.code.trim()
-        if (phone.isBlank() || code.isBlank()) {
+        if (!isValidPhone(phone) || code.isBlank()) {
             return null
         }
 
@@ -577,5 +582,14 @@ class AuthService(
         } else {
             null
         }
+    }
+
+    private fun normalizePhone(phone: String?): String {
+        if (phone == null) return ""
+        return phone.trim().replace(" ", "").replace("-", "")
+    }
+
+    private fun isValidPhone(phone: String): Boolean {
+        return e164Regex.matches(phone)
     }
 }

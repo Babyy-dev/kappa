@@ -31,5 +31,8 @@ data class GiftSendDto(
     val recipientId: String? = null,
     val amount: Long,
     val senderBalance: Long,
-    val createdAt: Long
+    val createdAt: Long,
+    val giftType: String? = null,
+    val diamondsTotal: Long? = null,
+    val recipientCount: Int? = null
 )
