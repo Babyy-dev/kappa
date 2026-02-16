@@ -3,6 +3,7 @@
 import com.kappa.backend.config.AppConfig
 import com.kappa.backend.data.Agencies
 import com.kappa.backend.data.RoomBans
+import com.kappa.backend.data.RoomFavorites
 import com.kappa.backend.data.RoomParticipants
 import com.kappa.backend.data.RoomSeats
 import com.kappa.backend.data.Rooms
@@ -22,6 +23,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
 import kotlinx.serialization.encodeToString
@@ -46,7 +48,7 @@ class RoomService(
         val failure: JoinRoomFailure? = null
     )
 
-    fun listRooms(status: String? = "active"): List<RoomResponse> {
+    fun listRooms(status: String? = "active", userId: UUID? = null): List<RoomResponse> {
         return transaction {
             val query = if (status == null) {
                 Rooms.selectAll()
@@ -54,6 +56,7 @@ class RoomService(
                 Rooms.select { Rooms.status eq status }
             }
             val rows = query.toList()
+            val roomIds = rows.map { it[Rooms.id] }
             val agencyIds = rows.mapNotNull { it[Rooms.agencyId] }.distinct()
             val agencies = if (agencyIds.isNotEmpty()) {
                 Agencies.select { Agencies.id inList agencyIds }.associate { row ->
@@ -61,6 +64,14 @@ class RoomService(
                 }
             } else {
                 emptyMap()
+            }
+            val favoriteRoomIds = if (userId != null && roomIds.isNotEmpty()) {
+                RoomFavorites
+                    .select { (RoomFavorites.userId eq userId) and (RoomFavorites.roomId inList roomIds) }
+                    .map { it[RoomFavorites.roomId] }
+                    .toSet()
+            } else {
+                emptySet()
             }
             rows.map { row ->
                     val roomId = row[Rooms.id]
@@ -81,7 +92,8 @@ class RoomService(
                         region = CountryRegion.resolveRegion(country) ?: "Global",
                         agencyName = agencyName,
                         agencyIconUrl = agencyIcon,
-                        roomCode = shortCode(roomId.toString())
+                        roomCode = shortCode(roomId.toString()),
+                        isFavorite = favoriteRoomIds.contains(roomId)
                     )
                 }
         }
@@ -128,6 +140,9 @@ class RoomService(
             }
 
             val token = liveKitTokenService.generateToken(userId.toString(), username, roomRow[Rooms.name])
+            val isFavorite = RoomFavorites.select {
+                (RoomFavorites.userId eq userId) and (RoomFavorites.roomId eq roomId)
+            }.any()
             val agencyRow = roomRow[Rooms.agencyId]?.let { agencyId ->
                 Agencies.select { Agencies.id eq agencyId }.singleOrNull()
             }
@@ -146,7 +161,8 @@ class RoomService(
                 region = CountryRegion.resolveRegion(country) ?: "Global",
                 agencyName = agencyName,
                 agencyIconUrl = agencyIcon,
-                roomCode = shortCode(roomRow[Rooms.id].toString())
+                roomCode = shortCode(roomRow[Rooms.id].toString()),
+                isFavorite = isFavorite
             )
 
             JoinRoomResult(
@@ -199,7 +215,8 @@ class RoomService(
                 region = CountryRegion.resolveRegion(resolvedCountry) ?: "Global",
                 agencyName = null,
                 agencyIconUrl = null,
-                roomCode = shortCode(roomId.toString())
+                roomCode = shortCode(roomId.toString()),
+                isFavorite = false
             )
         }
     }
@@ -228,7 +245,52 @@ class RoomService(
                 region = CountryRegion.resolveRegion(country) ?: "Global",
                 agencyName = agencyName,
                 agencyIconUrl = agencyIcon,
-                roomCode = shortCode(roomRow[Rooms.id].toString())
+                roomCode = shortCode(roomRow[Rooms.id].toString()),
+                isFavorite = false
+            )
+        }
+    }
+
+    fun toggleFavorite(roomId: UUID, userId: UUID, favorite: Boolean): RoomResponse? {
+        return transaction {
+            val roomRow = Rooms.select { Rooms.id eq roomId }.singleOrNull() ?: return@transaction null
+            if (favorite) {
+                val exists = RoomFavorites.select {
+                    (RoomFavorites.userId eq userId) and (RoomFavorites.roomId eq roomId)
+                }.any()
+                if (!exists) {
+                    RoomFavorites.insert {
+                        it[RoomFavorites.userId] = userId
+                        it[RoomFavorites.roomId] = roomId
+                        it[RoomFavorites.createdAt] = System.currentTimeMillis()
+                    }
+                }
+            } else {
+                RoomFavorites.deleteWhere {
+                    (RoomFavorites.userId eq userId) and (RoomFavorites.roomId eq roomId)
+                }
+            }
+
+            val agencyRow = roomRow[Rooms.agencyId]?.let { agencyId ->
+                Agencies.select { Agencies.id eq agencyId }.singleOrNull()
+            }
+            val agencyName = agencyRow?.get(Agencies.name)
+            val agencyIcon = agencyRow?.get(Agencies.iconUrl)
+            val country = roomRow[Rooms.country]
+            RoomResponse(
+                id = roomRow[Rooms.id].toString(),
+                name = roomRow[Rooms.name],
+                isActive = roomRow[Rooms.status] == "active",
+                seatMode = SeatMode.valueOf(roomRow[Rooms.seatMode]),
+                participantCount = participantCount(roomId),
+                maxSeats = roomRow[Rooms.maxSeats] ?: 28,
+                requiresPassword = roomRow[Rooms.passwordHash] != null,
+                country = country,
+                region = CountryRegion.resolveRegion(country) ?: "Global",
+                agencyName = agencyName,
+                agencyIconUrl = agencyIcon,
+                roomCode = shortCode(roomRow[Rooms.id].toString()),
+                isFavorite = favorite
             )
         }
     }

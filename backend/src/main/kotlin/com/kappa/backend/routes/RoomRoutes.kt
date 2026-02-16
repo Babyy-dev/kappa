@@ -28,7 +28,9 @@ fun Route.roomRoutes(
     roomInteractionService: RoomInteractionService
 ) {
     get("rooms") {
-        val rooms = roomService.listRooms()
+        val principal = call.principal<JWTPrincipal>()
+        val userId = principal?.subject?.let { value -> runCatching { UUID.fromString(value) }.getOrNull() }
+        val rooms = roomService.listRooms(userId = userId)
         call.respond(ApiResponse(success = true, data = rooms))
     }
 
@@ -109,6 +111,34 @@ fun Route.roomRoutes(
             return@post
         }
         call.respond(ApiResponse(success = true, data = Unit, message = "Left room"))
+    }
+
+    post("rooms/{id}/favorite") {
+        val principal = call.principal<JWTPrincipal>()
+        val userId = principal?.subject ?: return@post call.respond(
+            HttpStatusCode.Unauthorized,
+            ApiResponse<Unit>(success = false, error = "Unauthorized")
+        )
+        val roomId = call.parameters["id"] ?: return@post call.respond(
+            HttpStatusCode.BadRequest,
+            ApiResponse<Unit>(success = false, error = "Missing room id")
+        )
+        val favoriteParam = call.request.queryParameters["favorite"]?.trim()?.lowercase()
+        val favorite = when (favoriteParam) {
+            null, "" -> true
+            "true", "1", "yes" -> true
+            "false", "0", "no" -> false
+            else -> return@post call.respond(
+                HttpStatusCode.BadRequest,
+                ApiResponse<Unit>(success = false, error = "Invalid favorite flag")
+            )
+        }
+        val response = roomService.toggleFavorite(UUID.fromString(roomId), UUID.fromString(userId), favorite)
+        if (response == null) {
+            call.respond(HttpStatusCode.NotFound, ApiResponse<Unit>(success = false, error = "Room not found"))
+            return@post
+        }
+        call.respond(ApiResponse(success = true, data = response))
     }
 
     post("rooms/{id}/close") {

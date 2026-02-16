@@ -29,6 +29,7 @@ import com.kappa.backend.data.Posts
 import com.kappa.backend.data.PhoneOtps
 import com.kappa.backend.data.RefreshTokens
 import com.kappa.backend.data.RoomBans
+import com.kappa.backend.data.RoomFavorites
 import com.kappa.backend.data.RoomGifts
 import com.kappa.backend.data.RoomCoinCounters
 import com.kappa.backend.data.RoomMessages
@@ -105,6 +106,7 @@ object DatabaseFactory {
                 RoomSeats,
                 RoomParticipants,
                 RoomBans,
+                RoomFavorites,
                 RoomMessages,
                 RoomGifts,
                 RoomCoinCounters,

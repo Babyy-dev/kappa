@@ -35,7 +35,8 @@ data class RoomResponse(
     val region: String? = null,
     val agencyName: String? = null,
     val agencyIconUrl: String? = null,
-    val roomCode: String? = null
+    val roomCode: String? = null,
+    val isFavorite: Boolean = false
 )
 
 @Serializable

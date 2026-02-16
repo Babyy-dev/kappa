@@ -108,11 +108,14 @@ class MyMenuViewModel @Inject constructor(
         viewModelScope.launch {
             _viewState.update { it.copy(isLoading = true, error = null, message = null) }
             val announcements = runCatching { apiService.getAnnouncements() }.getOrNull()
+            val rewards = runCatching { apiService.getRewardRequests() }.getOrNull()
             _viewState.update {
                 it.copy(
                     announcements = announcements?.data.orEmpty().filter { item -> item.isActive },
+                    rewards = rewards?.data.orEmpty(),
                     isLoading = false,
                     error = announcements?.takeIf { !it.success }?.error
+                        ?: rewards?.takeIf { !it.success }?.error
                 )
             }
         }

@@ -17,6 +17,9 @@ import com.kappa.app.R
 import com.kappa.app.main.MyMenuViewModel
 import com.kappa.app.main.SimpleRowAdapter
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class RoomRewardsFragment : Fragment() {
     override fun onCreateView(
@@ -46,18 +49,23 @@ class RoomRewardsFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 myMenuViewModel.viewState.collect { state ->
-                    rowsAdapter.submitRows(
-                        state.announcements.map { announcement ->
-                            announcement.title to announcement.message
+                    val rows = buildList {
+                        state.announcements.forEach { announcement ->
+                            add("Announcement: ${announcement.title}" to announcement.message)
                         }
-                    )
+                        state.rewards.forEach { reward ->
+                            val subtitle = "${reward.diamonds} diamonds | ${formatTimestamp(reward.createdAt)}"
+                            add("Reward: ${reward.status}" to subtitle)
+                        }
+                    }
+                    rowsAdapter.submitRows(rows)
                     when {
                         state.error != null -> {
                             emptyText.text = state.error
                             emptyText.visibility = View.VISIBLE
                         }
-                        state.announcements.isEmpty() -> {
-                            emptyText.text = "No announcements yet."
+                        rows.isEmpty() -> {
+                            emptyText.text = "No rewards or announcements yet."
                             emptyText.visibility = View.VISIBLE
                         }
                         else -> {
@@ -67,5 +75,11 @@ class RoomRewardsFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun formatTimestamp(value: Long): String {
+        if (value <= 0L) return "-"
+        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US)
+        return formatter.format(Date(value))
     }
 }

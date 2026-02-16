@@ -310,6 +310,13 @@ object Rooms : Table("rooms") {
     override val primaryKey = PrimaryKey(id)
 }
 
+object RoomFavorites : Table("room_favorites") {
+    val userId = uuid("user_id")
+    val roomId = uuid("room_id")
+    val createdAt = long("created_at")
+    override val primaryKey = PrimaryKey(userId, roomId)
+}
+
 object RoomSeats : Table("room_seats") {
     val roomId = uuid("room_id")
     val seatNumber = integer("seat_number")
