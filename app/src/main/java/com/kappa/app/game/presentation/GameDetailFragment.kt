@@ -59,9 +59,10 @@ class GameDetailFragment : Fragment() {
         val title = arguments?.getString("game_title") ?: "Game"
         val entryFee = arguments?.getLong("game_fee") ?: 0L
         val gameType = runCatching { GameType.valueOf(typeName ?: "") }.getOrDefault(GameType.LUCKY_DRAW)
+        val baseSubtitle = buildSubtitle(gameType)
 
         titleText.text = title
-        subtitleText.text = buildSubtitle(gameType)
+        subtitleText.text = baseSubtitle
 
         playersList.layoutManager = LinearLayoutManager(requireContext())
         playersList.adapter = playersAdapter
@@ -87,24 +88,20 @@ class GameDetailFragment : Fragment() {
         }
 
         startButton.setOnClickListener {
-            // Server-driven start; actions are allowed once joined
-            actionButton.isEnabled = true
-            actionAltButton.isEnabled = true
+            viewModel.sendAction("start")
         }
 
         actionButton.setOnClickListener {
             val actionType = when (gameType) {
-                GameType.LUCKY_DRAW -> "SPIN"
-                GameType.BATTLE -> "ATTACK"
-                GameType.GIFT_RUSH -> "GIFT"
-                GameType.TAP_SPEED -> "TAP"
+                GameType.LUCKY_DRAW -> "spin"
+                GameType.BATTLE -> "attack"
+                GameType.GIFT_RUSH -> "gift"
+                GameType.TAP_SPEED -> "tap"
             }
             viewModel.sendAction(actionType)
             if (gameType == GameType.GIFT_RUSH) {
                 val giftId = arguments?.getString("gift_id")
-                if (giftId.isNullOrBlank()) {
-                    viewModel.setMessage("Missing gift id")
-                } else {
+                if (!giftId.isNullOrBlank()) {
                     viewModel.sendGiftPlay(giftId, 1)
                 }
             }
@@ -112,7 +109,7 @@ class GameDetailFragment : Fragment() {
 
         actionAltButton.setOnClickListener {
             if (gameType == GameType.TAP_SPEED) {
-                viewModel.sendAction("TAP")
+                viewModel.sendAction("tap")
             }
         }
 
@@ -123,6 +120,9 @@ class GameDetailFragment : Fragment() {
             GameType.TAP_SPEED -> "Tap"
         }
         actionAltButton.visibility = if (gameType == GameType.TAP_SPEED) View.VISIBLE else View.GONE
+        startButton.isEnabled = false
+        actionButton.isEnabled = false
+        actionAltButton.isEnabled = false
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -132,9 +132,15 @@ class GameDetailFragment : Fragment() {
                     val me = state.players.firstOrNull { it.id == state.userId }
                     scoreText.text = "Score: ${me?.score ?: 0}"
                     playersAdapter.submitList(state.players)
+                    startButton.isEnabled = state.isJoined
+                    val actionsEnabled = state.isJoined && state.phase != "ended"
+                    actionButton.isEnabled = actionsEnabled
+                    actionAltButton.isEnabled = actionsEnabled && gameType == GameType.TAP_SPEED
                     if (state.message != null) {
                         subtitleText.text = state.message
                         viewModel.clearMessage()
+                    } else {
+                        subtitleText.text = "$baseSubtitle | Phase: ${state.phase}"
                     }
                 }
             }

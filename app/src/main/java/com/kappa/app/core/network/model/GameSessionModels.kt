@@ -14,7 +14,10 @@ data class GameSessionResponse(
 data class GameJoinRequest(
     val roomId: String,
     val userId: String,
-    val sessionId: String
+    val sessionId: String,
+    val gameId: String? = null,
+    val gameType: String? = null,
+    val entryFee: Long? = null
 )
 
 data class GameActionRequest(

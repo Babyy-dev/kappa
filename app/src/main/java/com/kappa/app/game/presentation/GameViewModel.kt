@@ -87,6 +87,10 @@ class GameViewModel @Inject constructor(
 
     fun join(entryFee: Long) {
         val state = _viewState.value
+        if (state.roomId.isBlank()) {
+            _viewState.value = state.copy(message = "Join a room first")
+            return
+        }
         if (state.balance < entryFee) {
             _viewState.value = state.copy(message = "Not enough coins")
             return
@@ -114,6 +118,7 @@ class GameViewModel @Inject constructor(
             )
         )
         repository.sendAction(action)
+        _viewState.value = state.copy(message = "Action sent: $actionType")
     }
 
     fun sendGiftPlay(giftId: String, quantity: Int) {

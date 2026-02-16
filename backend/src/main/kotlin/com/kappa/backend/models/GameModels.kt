@@ -19,7 +19,10 @@ data class GameSessionResponse(
 data class GameJoinRequest(
     val roomId: String,
     val userId: String,
-    val sessionId: String
+    val sessionId: String,
+    val gameId: String? = null,
+    val gameType: String? = null,
+    val entryFee: Long? = null
 )
 
 @Serializable
@@ -72,8 +75,11 @@ data class GameRewardPayload(
 @Serializable
 data class GameStatePayload(
     val roomId: String,
+    val gameId: String,
+    val gameType: String,
     val phase: String,
     val players: List<String>,
+    val scores: Map<String, Int> = emptyMap(),
     val updatedAt: Long,
     val timeLeft: Int = 0,
     val pot: Long = 0,

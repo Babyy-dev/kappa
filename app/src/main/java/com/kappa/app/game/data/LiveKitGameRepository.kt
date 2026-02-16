@@ -55,14 +55,30 @@ class LiveKitGameRepository(
             val sessionId = sessionResponse?.data?.sessionId
             if (sessionResponse == null || !sessionResponse.success || sessionId.isNullOrBlank()) {
                 Timber.e("Game session create failed: ${sessionResponse?.error}")
+                eventSink?.invoke(GameSessionEvent.Error(sessionResponse?.error ?: sessionResponse?.message ?: "Failed to create game session"))
                 return@launch
             }
             currentSessionId = sessionId
             val joinResponse = runCatching {
-                apiService.joinGame(GameJoinRequest(roomId = roomId, userId = userId, sessionId = sessionId))
+                apiService.joinGame(
+                    GameJoinRequest(
+                        roomId = roomId,
+                        userId = userId,
+                        sessionId = sessionId,
+                        gameId = gameId,
+                        gameType = type.name.lowercase(),
+                        entryFee = entryFee
+                    )
+                )
             }.getOrNull()
             if (joinResponse == null || !joinResponse.success) {
                 Timber.e("Game join failed: ${joinResponse?.error}")
+                eventSink?.invoke(GameSessionEvent.Error(joinResponse?.error ?: joinResponse?.message ?: "Failed to join game"))
+                return@launch
+            }
+            val joinStatus = joinResponse.data?.status
+            if (joinStatus != "ok") {
+                eventSink?.invoke(GameSessionEvent.Error(joinResponse.data?.message ?: "Join rejected"))
                 return@launch
             }
             eventSink?.invoke(GameSessionEvent.Joined(sessionId))
@@ -82,7 +98,18 @@ class LiveKitGameRepository(
                         payload = action.payload?.mapValues { it.value?.toString() }
                     )
                 )
-            }.onFailure { Timber.e(it, "Game action failed") }
+            }.onSuccess { response ->
+                if (!response.success) {
+                    eventSink?.invoke(GameSessionEvent.Error(response.error ?: response.message ?: "Action failed"))
+                    return@onSuccess
+                }
+                if (response.data?.status != "ok") {
+                    eventSink?.invoke(GameSessionEvent.Error(response.data?.message ?: "Action rejected"))
+                }
+            }.onFailure {
+                Timber.e(it, "Game action failed")
+                eventSink?.invoke(GameSessionEvent.Error(it.message ?: "Action failed"))
+            }
         }
     }
 
@@ -100,7 +127,18 @@ class LiveKitGameRepository(
                         quantity = quantity
                     )
                 )
-            }.onFailure { Timber.e(it, "Gift play failed") }
+            }.onSuccess { response ->
+                if (!response.success) {
+                    eventSink?.invoke(GameSessionEvent.Error(response.error ?: response.message ?: "Gift play failed"))
+                    return@onSuccess
+                }
+                if (response.data?.status != "ok") {
+                    eventSink?.invoke(GameSessionEvent.Error(response.data?.message ?: "Gift play rejected"))
+                }
+            }.onFailure {
+                Timber.e(it, "Gift play failed")
+                eventSink?.invoke(GameSessionEvent.Error(it.message ?: "Gift play failed"))
+            }
         }
     }
 
@@ -130,12 +168,14 @@ class LiveKitGameRepository(
         val updatedAt = payload.get("updatedAt")?.asLong ?: 0L
         val timeLeft = payload.get("timeLeft")?.asInt ?: 0
         val pot = payload.get("pot")?.asLong ?: 0L
+        val scoresObject = payload.getAsJsonObject("scores")
         val playersArray = payload.getAsJsonArray("players")
         val players = mutableListOf<GamePlayer>()
         playersArray?.forEach { item ->
             val id = item.asString
             if (id.isNotBlank()) {
-                players.add(GamePlayer(id = id, name = id.take(6), score = 0))
+                val score = scoresObject?.get(id)?.asInt ?: 0
+                players.add(GamePlayer(id = id, name = id.take(6), score = score))
             }
         }
         return GameSessionEvent.State(

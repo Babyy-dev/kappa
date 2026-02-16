@@ -43,7 +43,8 @@ fun Route.homeRoutes() {
         val games = listOf(
             MiniGame("lucky_draw", "Lucky Draw", "Spin and win rewards", 200),
             MiniGame("battle_arena", "Battle Arena", "Score more in 30 seconds", 300),
-            MiniGame("gift_rush", "Gift Rush", "Send gifts to climb the rank", 500)
+            MiniGame("gift_rush", "Gift Rush", "Send gifts to climb the rank", 500),
+            MiniGame("tap_speed", "Tap Speed", "Tap faster than other players", 150)
         )
         call.respond(ApiResponse(success = true, data = games))
     }
