@@ -62,7 +62,7 @@
                         android:ellipsize="end"
                         android:gravity="center"
                         android:maxLines="1"
-                        android:text="Mensagem"
+                        android:text="@string/home_tab_messages"
                         android:textAppearance="@style/TextAppearance.Kappa.HeaderTab"
                         android:textColor="@color/kappa_gold_300" />
 
@@ -74,7 +74,7 @@
                         android:ellipsize="end"
                         android:gravity="center"
                         android:maxLines="1"
-                        android:text="Amigos"
+                        android:text="@string/home_tab_friends"
                         android:textAppearance="@style/TextAppearance.Kappa.HeaderTab"
                         android:textColor="@color/kappa_cream" />
 
@@ -86,7 +86,7 @@
                         android:ellipsize="end"
                         android:gravity="center"
                         android:maxLines="1"
-                        android:text="Familia"
+                        android:text="@string/home_tab_family"
                         android:textAppearance="@style/TextAppearance.Kappa.HeaderTab"
                         android:textColor="@color/kappa_cream" />
                 </LinearLayout>
@@ -120,7 +120,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_weight="1"
                         android:background="@android:color/transparent"
-                        android:hint="Digite o nome do seu amigo"
+                        android:hint="@string/home_search_friend_hint"
                         android:textColor="@color/kappa_mint_100"
                         android:textColorHint="@color/kappa_text_muted" />
                 </LinearLayout>
@@ -129,7 +129,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
-                    android:text="Mensagens"
+                    android:text="@string/home_section_messages"
                     android:textAppearance="@style/TextAppearance.Kappa.Section"
                     android:textColor="@color/kappa_gold_300" />
 
@@ -167,7 +167,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="Digite o nome do seu amigo"
+                        android:text="@string/home_search_friend_hint"
                         android:textAppearance="@style/TextAppearance.Kappa.Body"
                         android:textColor="@color/kappa_mint_100" />
                 </LinearLayout>
@@ -176,7 +176,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
-                    android:text="Amigos"
+                    android:text="@string/home_tab_friends"
                     android:textAppearance="@style/TextAppearance.Kappa.Section"
                     android:textColor="@color/kappa_gold_300" />
 
@@ -215,7 +215,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Familia"
+                            android:text="@string/home_family_card_title"
                             android:textAppearance="@style/TextAppearance.Kappa.Section"
                             android:textColor="@color/kappa_gold_300" />
 
@@ -223,7 +223,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
-                            android:text="Pagina inicial"
+                            android:text="@string/home_family_home_page"
                             android:textAppearance="@style/TextAppearance.Kappa.Body"
                             android:textColor="@color/kappa_mint_100" />
 
@@ -231,7 +231,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:text="Anuncio de familia"
+                            android:text="@string/home_family_announcement"
                             android:textAppearance="@style/TextAppearance.Kappa.Body"
                             android:textColor="@color/kappa_mint_100" />
                     </LinearLayout>
@@ -241,7 +241,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
-                    android:text="Sala da familia"
+                    android:text="@string/home_family_room_section"
                     android:textAppearance="@style/TextAppearance.Kappa.Section"
                     android:textColor="@color/kappa_gold_300" />
 
@@ -318,7 +318,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Gerenciar familia"
+                            android:text="@string/home_family_manage"
                             android:textAppearance="@style/TextAppearance.Kappa.Section"
                             android:textColor="@color/kappa_gold_300" />
 
@@ -327,7 +327,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="Nenhuma familia"
+                            android:text="@string/home_family_none"
                             android:textAppearance="@style/TextAppearance.Kappa.Body"
                             android:textColor="@color/kappa_mint_100" />
 
@@ -336,7 +336,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:text="Codigo: -"
+                            android:text="@string/home_code_default"
                             android:textAppearance="@style/TextAppearance.Kappa.Body"
                             android:textColor="@color/kappa_text_muted" />
 
@@ -344,7 +344,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="12dp"
-                            android:hint="Nome da familia"
+                            android:hint="@string/home_family_name_hint"
                             style="@style/Widget.Kappa.TextInput">
 
                             <com.google.android.material.textfield.TextInputEditText
@@ -359,7 +359,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:hint="ID da familia"
+                            android:hint="@string/home_family_id_hint"
                             style="@style/Widget.Kappa.TextInput">
 
                             <com.google.android.material.textfield.TextInputEditText
@@ -382,7 +382,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="8dp"
                                 android:layout_weight="1"
-                                android:text="Criar"
+                                android:text="@string/home_action_create"
                                 style="@style/Widget.Kappa.Button.Glow" />
 
                             <com.google.android.material.button.MaterialButton
@@ -390,7 +390,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Entrar"
+                                android:text="@string/home_action_join"
                                 style="@style/Widget.Kappa.Button.Secondary" />
                         </LinearLayout>
 
@@ -398,7 +398,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="12dp"
-                            android:hint="Nome da sala da familia"
+                            android:hint="@string/home_family_room_name_hint"
                             style="@style/Widget.Kappa.TextInput">
 
                             <com.google.android.material.textfield.TextInputEditText
@@ -414,7 +414,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="Criar sala da familia"
+                            android:text="@string/home_family_create_room"
                             style="@style/Widget.Kappa.Button.Glow" />
 
                         <TextView
@@ -433,7 +433,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Membros"
+                    android:text="@string/home_family_members"
                     android:textAppearance="@style/TextAppearance.Kappa.Section"
                     android:textColor="@color/kappa_gold_300" />
 
@@ -448,7 +448,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Salas da familia"
+                    android:text="@string/home_family_rooms"
                     android:textAppearance="@style/TextAppearance.Kappa.Section"
                     android:textColor="@color/kappa_gold_300" />
 

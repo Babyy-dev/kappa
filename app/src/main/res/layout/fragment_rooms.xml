@@ -99,7 +99,7 @@
                     android:ellipsize="end"
                     android:gravity="center"
                     android:maxLines="1"
-                    android:text="Meu"
+                    android:text="@string/rooms_tab_my"
                     android:textAppearance="@style/TextAppearance.Kappa.HeaderTab"
                     android:textColor="@color/kappa_gold_300" />
 
@@ -123,7 +123,7 @@
                     android:ellipsize="end"
                     android:gravity="center"
                     android:maxLines="1"
-                    android:text="Postagens"
+                    android:text="@string/rooms_tab_posts"
                     android:textAppearance="@style/TextAppearance.Kappa.HeaderTab"
                     android:textColor="@color/kappa_cream" />
             </LinearLayout>
@@ -138,7 +138,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Meu sala"
+                android:text="@string/rooms_my_room_section"
                 android:textAppearance="@style/TextAppearance.Kappa.Section"
                 android:textColor="@color/kappa_gold_300" />
 
@@ -182,7 +182,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Sala VIP"
+                            android:text="@string/rooms_vip_room"
                             android:textAppearance="@style/TextAppearance.Kappa.Section"
                             android:textColor="@color/kappa_mint_100" />
 
@@ -361,7 +361,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Meu seguidores"
+        android:text="@string/rooms_my_followers"
         android:textAppearance="@style/TextAppearance.Kappa.Section"
         android:textColor="@color/kappa_gold_300" />
 
@@ -514,7 +514,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="Salas em alta para você."
+                    android:text="@string/rooms_popular_subtitle"
                     android:textAppearance="@style/TextAppearance.Kappa.Body"
                     android:textAlignment="center"
                     android:textColor="@color/kappa_mint_100" />
@@ -542,7 +542,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Postagens"
+            android:text="@string/rooms_tab_posts"
             android:textAppearance="@style/TextAppearance.Kappa.Section"
             android:textColor="@color/kappa_gold_300" />
 

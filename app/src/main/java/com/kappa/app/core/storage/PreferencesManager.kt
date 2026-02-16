@@ -26,6 +26,7 @@ class PreferencesManager @Inject constructor(
         private val REFRESH_TOKEN_KEY = stringPreferencesKey("refresh_token")
         private val USER_ID_KEY = stringPreferencesKey("user_id")
         private val ONBOARDING_USER_ID_KEY = stringPreferencesKey("onboarding_user_id")
+        private val APP_LANGUAGE_KEY = stringPreferencesKey("app_language")
     }
 
     suspend fun saveAccessToken(token: String) {
@@ -112,5 +113,21 @@ class PreferencesManager @Inject constructor(
         dataStore.edit { preferences ->
             preferences.remove(ONBOARDING_USER_ID_KEY)
         }
+    }
+
+    suspend fun saveAppLanguage(languageTag: String) {
+        dataStore.edit { preferences ->
+            preferences[APP_LANGUAGE_KEY] = languageTag
+        }
+    }
+
+    fun getAppLanguage(): Flow<String?> {
+        return dataStore.data.map { preferences ->
+            preferences[APP_LANGUAGE_KEY]
+        }
+    }
+
+    suspend fun getAppLanguageOnce(): String? {
+        return getAppLanguage().first()
     }
 }

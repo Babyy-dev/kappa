@@ -57,7 +57,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
-                        android:text="Distribua moedas para usuarios."
+                        android:text="@string/reseller_subtitle"
                         android:textAppearance="@style/TextAppearance.Kappa.Body"
                         android:textColor="@color/kappa_mint_100" />
                 </LinearLayout>
@@ -83,7 +83,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Distribuicao de moedas"
+                        android:text="@string/reseller_distribution_title"
                         android:textAppearance="@style/TextAppearance.Kappa.Section"
                         android:textColor="@color/kappa_gold_300" />
 

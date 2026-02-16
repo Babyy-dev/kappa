@@ -154,17 +154,17 @@ class HomeFragment : Fragment() {
                     familyMembersAdapter.submitRows(state.familyMembers)
                     familyRoomsAdapter.submitRows(state.familyRooms)
                     if (state.familyName.isNullOrBlank()) {
-                        familyCurrentText.text = "Nenhuma familia"
-                        familyCodeText.text = "Codigo: -"
+                        familyCurrentText.text = getString(R.string.home_family_none)
+                        familyCodeText.text = getString(R.string.home_code_default)
                     } else {
-                        familyCurrentText.text = "Familia: ${state.familyName}"
-                        familyCodeText.text = "Codigo: ${state.familyCode ?: "-"}"
+                        familyCurrentText.text = getString(R.string.home_family_label_format, state.familyName)
+                        familyCodeText.text = getString(R.string.home_code_format, state.familyCode ?: "-")
                     }
                     val hasFamily = state.family != null
                     familyRoomCreateButton.isEnabled = hasFamily
                     familyRoomNameInput.isEnabled = hasFamily
                     if (state.isLoading) {
-                        familyStatusText.text = "Atualizando..."
+                        familyStatusText.text = getString(R.string.home_updating)
                         familyStatusText.visibility = View.VISIBLE
                     } else if (state.message.isNullOrBlank()) {
                         familyStatusText.visibility = View.GONE

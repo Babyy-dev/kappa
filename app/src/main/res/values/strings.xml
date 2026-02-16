@@ -37,4 +37,40 @@
     <string name="privacy_policy">Privacy Policy</string>
     <string name="terms_of_service">Terms of Service</string>
 
+    <string name="home_tab_messages">Messages</string>
+    <string name="home_tab_friends">Friends</string>
+    <string name="home_tab_family">Family</string>
+    <string name="home_search_friend_hint">Type your friend\'s name</string>
+    <string name="home_section_messages">Messages</string>
+    <string name="home_family_card_title">Family</string>
+    <string name="home_family_home_page">Home page</string>
+    <string name="home_family_announcement">Family announcement</string>
+    <string name="home_family_room_section">Family room</string>
+    <string name="home_family_manage">Manage family</string>
+    <string name="home_family_none">No family</string>
+    <string name="home_code_default">Code: -</string>
+    <string name="home_family_name_hint">Family name</string>
+    <string name="home_family_id_hint">Family ID</string>
+    <string name="home_action_create">Create</string>
+    <string name="home_action_join">Join</string>
+    <string name="home_family_room_name_hint">Family room name</string>
+    <string name="home_family_create_room">Create family room</string>
+    <string name="home_family_members">Members</string>
+    <string name="home_family_rooms">Family rooms</string>
+    <string name="home_family_label_format">Family: %1$s</string>
+    <string name="home_code_format">Code: %1$s</string>
+    <string name="home_updating">Updating...</string>
+
+    <string name="rooms_tab_my">My</string>
+    <string name="rooms_tab_posts">Posts</string>
+    <string name="rooms_my_room_section">My room</string>
+    <string name="rooms_vip_room">VIP Room</string>
+    <string name="rooms_my_followers">My followers</string>
+    <string name="rooms_popular_subtitle">Trending rooms for you.</string>
+
+    <string name="reseller_subtitle">Distribute coins to users.</string>
+    <string name="reseller_distribution_title">Coin distribution</string>
+
+    <string name="profile_header_title">Profile</string>
+
 </resources>

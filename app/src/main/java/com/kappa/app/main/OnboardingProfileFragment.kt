@@ -21,6 +21,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.kappa.app.R
+import com.kappa.app.core.localization.AppLanguageManager
 import com.kappa.app.core.storage.PreferencesManager
 import com.kappa.app.user.presentation.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -136,6 +137,12 @@ class OnboardingProfileFragment : Fragment() {
                 messageText.visibility = View.VISIBLE
                 return@setOnClickListener
             }
+            val languageTag = AppLanguageManager.resolveLanguageTag(language)
+            if (languageTag == null) {
+                messageText.text = "Please select one of the supported languages"
+                messageText.visibility = View.VISIBLE
+                return@setOnClickListener
+            }
             if (avatarBytes != null && avatarBytes.isEmpty()) {
                 messageText.text = "Avatar file is invalid"
                 messageText.visibility = View.VISIBLE
@@ -144,6 +151,9 @@ class OnboardingProfileFragment : Fragment() {
 
             pendingComplete = true
             messageText.visibility = View.GONE
+            viewLifecycleOwner.lifecycleScope.launch {
+                preferencesManager.saveAppLanguage(languageTag)
+            }
 
             userViewModel.updateProfile(
                 nickname = displayName,

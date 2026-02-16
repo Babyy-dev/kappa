@@ -19,6 +19,8 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.kappa.app.R
 import com.kappa.app.auth.presentation.AuthViewModel
+import com.kappa.app.core.localization.AppLanguageManager
+import com.kappa.app.core.storage.PreferencesManager
 import com.kappa.app.domain.user.Role
 import com.kappa.app.domain.user.toDisplayName
 import com.kappa.app.user.presentation.UserViewModel
@@ -26,12 +28,17 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProfileFragment : Fragment() {
 
     private val authViewModel: AuthViewModel by viewModels()
     private val userViewModel: UserViewModel by viewModels()
+
+    @Inject
+    lateinit var preferencesManager: PreferencesManager
+
     private var selectedAvatarBytes: ByteArray? = null
     private var selectedAvatarName: String = "avatar.png"
     private var selectedAvatarMime: String = "image/png"
@@ -110,6 +117,17 @@ class ProfileFragment : Fragment() {
             val nickname = nicknameInput.text?.toString()?.trim()
             val country = countryInput.text?.toString()?.trim()
             val language = languageInput.text?.toString()?.trim()
+            if (!language.isNullOrBlank()) {
+                val languageTag = AppLanguageManager.resolveLanguageTag(language)
+                if (languageTag == null) {
+                    messageText.text = "Unsupported language. Use English, Portuguese, or Spanish."
+                    messageText.visibility = View.VISIBLE
+                    return@setOnClickListener
+                }
+                viewLifecycleOwner.lifecycleScope.launch {
+                    preferencesManager.saveAppLanguage(languageTag)
+                }
+            }
             val shouldUpdate = !nickname.isNullOrBlank() || !country.isNullOrBlank() || !language.isNullOrBlank()
             if (shouldUpdate) {
                 userViewModel.updateProfile(

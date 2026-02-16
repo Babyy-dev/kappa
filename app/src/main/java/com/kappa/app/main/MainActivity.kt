@@ -10,10 +10,12 @@ import androidx.navigation.navOptions
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.kappa.app.R
+import com.kappa.app.core.localization.AppLanguageManager
 import com.kappa.app.core.storage.PreferencesManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -24,9 +26,13 @@ class MainActivity : AppCompatActivity() {
     lateinit var preferencesManager: PreferencesManager
 
     private var sessionObserverJob: Job? = null
+    private var languageObserverJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        runBlocking {
+            AppLanguageManager.applyLanguage(preferencesManager.getAppLanguageOnce())
+        }
         setContentView(R.layout.activity_main)
 
         // Setup navigation - FragmentContainerView creates NavHostFragment automatically
@@ -102,6 +108,7 @@ class MainActivity : AppCompatActivity() {
                 navController.popBackStack(item.itemId, false)
             }
             observeSessionState(navController)
+            observeLanguageState()
 
             Timber.d("Navigation setup complete!")
             Timber.d("Using NavigationUI.setupWithNavController() - this handles all navigation automatically")
@@ -138,6 +145,19 @@ class MainActivity : AppCompatActivity() {
                             launchSingleTop = true
                         }
                     )
+                }
+            }
+        }
+    }
+
+    private fun observeLanguageState() {
+        if (languageObserverJob != null) {
+            return
+        }
+        languageObserverJob = lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                preferencesManager.getAppLanguage().collect { languageTag ->
+                    AppLanguageManager.applyLanguage(languageTag)
                 }
             }
         }

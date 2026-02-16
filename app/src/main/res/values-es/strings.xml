@@ -1,0 +1,54 @@
+<resources>
+    <string name="title_home">Inicio</string>
+    <string name="title_inbox">Bandeja</string>
+    <string name="title_rooms">Salas</string>
+    <string name="title_profile">Perfil</string>
+
+    <string name="onboarding_country_title">De donde eres?</string>
+    <string name="onboarding_country_subtitle">Selecciona tu pais para personalizar tu sala.</string>
+    <string name="onboarding_country_hint">Elegir pais</string>
+    <string name="onboarding_country_next">Siguiente</string>
+    <string name="onboarding_profile_title">Completa tu perfil</string>
+    <string name="onboarding_profile_subtitle">Agrega nombre, avatar y detalles.</string>
+    <string name="onboarding_profile_display_name_hint">Nombre visible</string>
+    <string name="onboarding_profile_country_hint">Pais</string>
+    <string name="onboarding_profile_language_hint">Idioma</string>
+    <string name="onboarding_profile_avatar">Elegir avatar</string>
+    <string name="onboarding_profile_continue">Continuar</string>
+
+    <string name="home_tab_messages">Mensajes</string>
+    <string name="home_tab_friends">Amigos</string>
+    <string name="home_tab_family">Familia</string>
+    <string name="home_search_friend_hint">Escribe el nombre de tu amigo</string>
+    <string name="home_section_messages">Mensajes</string>
+    <string name="home_family_card_title">Familia</string>
+    <string name="home_family_home_page">Pagina principal</string>
+    <string name="home_family_announcement">Anuncio de familia</string>
+    <string name="home_family_room_section">Sala de familia</string>
+    <string name="home_family_manage">Gestionar familia</string>
+    <string name="home_family_none">Sin familia</string>
+    <string name="home_code_default">Codigo: -</string>
+    <string name="home_family_name_hint">Nombre de familia</string>
+    <string name="home_family_id_hint">ID de familia</string>
+    <string name="home_action_create">Crear</string>
+    <string name="home_action_join">Entrar</string>
+    <string name="home_family_room_name_hint">Nombre de la sala de familia</string>
+    <string name="home_family_create_room">Crear sala de familia</string>
+    <string name="home_family_members">Miembros</string>
+    <string name="home_family_rooms">Salas de familia</string>
+    <string name="home_family_label_format">Familia: %1$s</string>
+    <string name="home_code_format">Codigo: %1$s</string>
+    <string name="home_updating">Actualizando...</string>
+
+    <string name="rooms_tab_my">Mi</string>
+    <string name="rooms_tab_posts">Publicaciones</string>
+    <string name="rooms_my_room_section">Mi sala</string>
+    <string name="rooms_vip_room">Sala VIP</string>
+    <string name="rooms_my_followers">Mis seguidores</string>
+    <string name="rooms_popular_subtitle">Salas en tendencia para ti.</string>
+
+    <string name="reseller_subtitle">Distribuye monedas a usuarios.</string>
+    <string name="reseller_distribution_title">Distribucion de monedas</string>
+
+    <string name="profile_header_title">Perfil</string>
+</resources>

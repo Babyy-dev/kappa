@@ -136,7 +136,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="6dp"
                     android:layout_weight="1"
-                    android:text="Perfil"
+                    android:text="@string/profile_header_title"
                     style="@style/Widget.Kappa.Button.Tab" />
 
                 <com.google.android.material.button.MaterialButton
